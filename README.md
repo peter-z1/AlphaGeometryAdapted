@@ -11,6 +11,24 @@ goal to [make](https://github.com/google-deepmind/alphageometry/issues/130)
 
 * Indent with **four** spaces (🖕 two spaces).
 
+## Adapted version
+
+This repository is an adapted working version of
+[foldl/AlphaGeometryRE](https://github.com/foldl/alphageometryre), which is
+licensed under the Apache License 2.0. The original repository re-engineers
+DeepMind's [AlphaGeometry](https://github.com/google-deepmind/alphageometry)
+for easier local use.
+
+This adapted version keeps the original Apache License 2.0 license file and
+preserves the upstream copyright and license notices. It contains local changes
+and additions for lecture-note development, experimentation, visualization, and
+synthetic data generation. These changes are independent adaptations and are not
+endorsed by, or affiliated with, the original AlphaGeometryRE authors or
+DeepMind.
+
+For the upstream project, see
+[foldl/AlphaGeometryRE](https://github.com/foldl/alphageometryre).
+
 Plan/Roadmap:
 
 * [x] LM Beam search.
