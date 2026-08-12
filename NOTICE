@@ -1,0 +1,18 @@
+AlphaGeometry Educational Reconstruction
+Copyright 2026 Peter Zenz
+
+This product includes software derived from Google DeepMind's AlphaGeometry,
+released under the Apache License 2.0:
+https://github.com/google-deepmind/alphageometry
+
+This product is based directly on foldl/AlphaGeometryRE, also released under
+the Apache License 2.0:
+https://github.com/foldl/alphageometryre
+
+AlphaGeometryRE incorporated a change originating in AlphaGeometry for the
+Masses:
+https://github.com/tpgh24/ag4masses
+
+The educational reconstruction, generated datasets, PyTorch training path,
+and benchmark additions are independent adaptations. Google DeepMind and the
+upstream authors do not endorse or sponsor this repository.

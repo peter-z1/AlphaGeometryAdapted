@@ -1,0 +1,20 @@
+{
+  "backend": "pytorch",
+  "beam_size": 128,
+  "complete": true,
+  "elapsed_seconds": 3600.028,
+  "error": "exceeded 3600 seconds",
+  "formalization": "a b c = triangle a b c; d e f g = incenter2 d e f g a b c; h = on_tline h d e f, on_circle h g d; i = on_line i h a, on_circle i g d; j = circle j i c e; k = circle k i b f; l = on_circle l j i, on_circle l k i; m = on_line m i l, on_line m g d ? perp a m a g",
+  "lm_decode_calls": 1,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 26,
+  "problem_name": "translated_imo_2019_p6",
+  "proof": null,
+  "search_depth": 12,
+  "solved": null,
+  "solver_stage": "lm_auxiliary_search",
+  "status": "timeout",
+  "timeout_seconds": 3600
+}

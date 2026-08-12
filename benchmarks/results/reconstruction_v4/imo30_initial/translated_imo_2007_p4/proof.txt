@@ -1,0 +1,54 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G H I J K : Points
+DA = DB [00]
+DB = DC [01]
+DE = DA [02]
+EA = EB [03]
+F,C,A are collinear [04]
+FC = FA [05]
+G,B,C are collinear [06]
+GC = GB [07]
+G,H,D are collinear [08]
+H,C,E are collinear [09]
+F,D,I are collinear [10]
+I,C,E are collinear [11]
+J,C,E are collinear [12]
+FJ ⟂ CE [13]
+C,K,E are collinear [14]
+CE ⟂ KG [15]
+
+ * Auxiliary Constructions:
+: Points
+
+
+ * Proof steps:
+001. DA = DB [00] & DB = DC [01] ⇒  DC = DA [16]
+002. DC = DA [16] & FC = FA [05] ⇒  AC ⟂ DF [17]
+003. DB = DC [01] & GC = GB [07] ⇒  BC ⟂ DG [18]
+004. G,B,C are collinear [06] & G,H,D are collinear [08] & F,I,D are collinear [10] & F,C,A are collinear [04] & AC ⟂ DF [17] & BC ⟂ DG [18] ⇒  ∠CGH = ∠IFC [19]
+005. DB = DC [01] & DA = DB [00] & DE = DA [02] ⇒  D is the circumcenter of \Delta ECA [20]
+006. DB = DC [01] & DA = DB [00] & DE = DA [02] ⇒  D is the circumcenter of \Delta ECB [21]
+007. DB = DC [01] & DA = DB [00] & DE = DA [02] ⇒  DC = DE [22]
+008. F,C,A are collinear [04] & FC = FA [05] ⇒  F is midpoint of CA [23]
+009. D is the circumcenter of \Delta ECA [20] & F is midpoint of CA [23] ⇒  ∠DAE = ∠(DF-CE) [24]
+010. DA = DB [00] & EA = EB [03] (SSS)⇒  ∠DAE = ∠EBD [25]
+011. G,B,C are collinear [06] & GC = GB [07] ⇒  G is midpoint of CB [26]
+012. D is the circumcenter of \Delta ECB [21] & G is midpoint of CB [26] ⇒  ∠EBD = ∠(CE-DG) [27]
+013. H,C,E are collinear [09] & G,H,D are collinear [08] & F,I,D are collinear [10] & I,C,E are collinear [11] & ∠DAE = ∠(DF-CE) [24] & ∠DAE = ∠EBD [25] & ∠EBD = ∠(CE-DG) [27] ⇒  ∠CHG = ∠FIC [28]
+014. ∠CGH = ∠IFC [19] & ∠CHG = ∠FIC [28] (Similar Triangles)⇒  HC:IC = HG:IF [29]
+015. F,I,D are collinear [10] & DF ⟂ AC [17] ⇒  IF ⟂ CA [30]
+016. F is midpoint of CA [23] & IF ⟂ CA [30] ⇒  IC = IA [31]
+017. C,K,E are collinear [14] & H,C,E are collinear [09] & J,C,E are collinear [12] & I,C,E are collinear [11] & FJ ⟂ CE [13] & CE ⟂ KG [15] ⇒  ∠GKH = ∠IJF [32]
+018. G,H,D are collinear [08] & C,K,E are collinear [14] & H,C,E are collinear [09] & J,C,E are collinear [12] & I,C,E are collinear [11] & F,I,D are collinear [10] & ∠DAE = ∠(DF-CE) [24] & ∠DAE = ∠EBD [25] & ∠EBD = ∠(CE-DG) [27] ⇒  ∠GHK = ∠JIF [33]
+019. ∠GKH = ∠IJF [32] & ∠GHK = ∠JIF [33] (Similar Triangles)⇒  GK:JF = GH:FI [34]
+020. DC = DE [22] ⇒  ∠DCE = ∠CED [35]
+021. H,C,E are collinear [09] & I,C,E are collinear [11] & ∠DCE = ∠CED [35] ⇒  ∠DCH = ∠IED [36]
+022. G,H,D are collinear [08] & H,C,E are collinear [09] & I,C,E are collinear [11] & D,I,F are collinear [10] & ∠DAE = ∠(DF-CE) [24] & ∠DAE = ∠EBD [25] & ∠EBD = ∠(CE-DG) [27] ⇒  ∠DHC = ∠EID [37]
+023. ∠DCH = ∠IED [36] & ∠DHC = ∠EID [37] (Similar Triangles)⇒  CD:ED = CH:EI [38]
+024. I,C,E are collinear [11] & H,C,E are collinear [09] & ∠DCE = ∠CED [35] ⇒  ∠DCI = ∠HED [39]
+025. D,I,F are collinear [10] & I,C,E are collinear [11] & H,C,E are collinear [09] & G,H,D are collinear [08] & ∠DAE = ∠(DF-CE) [24] & ∠DAE = ∠EBD [25] & ∠EBD = ∠(CE-DG) [27] ⇒  ∠DIC = ∠EHD [40]
+026. ∠DCI = ∠HED [39] & ∠DIC = ∠EHD [40] (Similar Triangles)⇒  CD:ED = CI:EH [41]
+027. HC:IC = HG:IF [29] & IC = IA [31] & GK:JF = GH:FI [34] & CD:ED = CH:EI [38] & DC = DE [22] & CD:ED = CI:EH [41] ⇒  GK:FJ = EI:EH
+==========================

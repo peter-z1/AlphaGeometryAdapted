@@ -1,0 +1,37 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G : Points
+∠BAD = ∠DAC [00]
+∠DCA = ∠BCD [01]
+C,A,E are collinear [02]
+DE ⟂ AC [03]
+C,B,F are collinear [04]
+DF ⟂ BC [05]
+A,D,G are collinear [06]
+BG ⟂ AD [07]
+
+ * Auxiliary Constructions:
+H : Points
+C,A,H are collinear [08]
+B,D,H are collinear [09]
+
+ * Proof steps:
+001. C,A,E are collinear [02] & A,D,G are collinear [06] & BG ⟂ AD [07] & DE ⟂ AC [03] ⇒  ∠DEA = ∠BGA [10]
+002. C,A,E are collinear [02] & A,D,G are collinear [06] & ∠DAC = ∠BAD [00] ⇒  ∠DAE = ∠BAG [11]
+003. C,A,E are collinear [02] & A,D,G are collinear [06] & ∠DAC = ∠BAD [00] ⇒  ∠EAG = ∠DAB [12]
+004. ∠DEA = ∠BGA [10] & ∠DAE = ∠BAG [11] (Similar Triangles)⇒  AD:AB = AE:AG [13]
+005. AD:AB = AE:AG [13] & ∠EAG = ∠DAB [12] (Similar Triangles)⇒  ∠EGA = ∠DBA [14]
+006. C,A,H are collinear [08] & ∠BAD = ∠DAC [00] ⇒  ∠BAD = ∠DAH [15]
+007. ∠BAD = ∠DAH [15] & B,D,H are collinear [09] ⇒  BD:AB = DH:AH [16]
+008. C,A,H are collinear [08] & ∠BCD = ∠DCA [01] ⇒  ∠BCD = ∠DCH [17]
+009. ∠BCD = ∠DCH [17] & B,D,H are collinear [09] ⇒  BD:CB = DH:CH [18]
+010. BD:AB = DH:AH [16] & BD:CB = DH:CH [18] ⇒  AB:CB = AH:CH [19]
+011. AB:CB = AH:CH [19] & C,A,H are collinear [08] ⇒  ∠CBH = ∠HBA [20]
+012. C,B,F are collinear [04] & A,D,G are collinear [06] & BG ⟂ AD [07] & DF ⟂ BC [05] ⇒  ∠BFD = ∠BGD [21]
+013. ∠BFD = ∠BGD [21] ⇒  B,D,G,F are concyclic [22]
+014. B,D,G,F are concyclic [22] ⇒  ∠BDG = ∠BFG [23]
+015. ∠EGA = ∠DBA [14] & A,D,G are collinear [06] & ∠CBH = ∠HBA [20] & B,D,H are collinear [09] & ∠BDG = ∠BFG [23] & C,B,F are collinear [04] ⇒  ∠(GF-AD) = ∠(EG-AD) [24]
+016. ∠(GF-AD) = ∠(EG-AD) [24] ⇒  GF ∥ EG [25]
+017. FG ∥ EG [25] ⇒  E,G,F are collinear
+==========================

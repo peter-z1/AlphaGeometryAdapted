@@ -1,0 +1,24 @@
+
+==========================
+ * From theorem premises:
+A B C D E F : Points
+∠ABC = ∠BCA [00]
+AB = AC [01]
+A,B,D are collinear [02]
+A,E,C are collinear [03]
+BD = CE [04]
+F,B,C are collinear [05]
+F,E,D are collinear [06]
+
+ * Auxiliary Constructions:
+: Points
+
+
+ * Proof steps:
+001. A,B,D are collinear [02] & F,B,C are collinear [05] & A,E,C are collinear [03] & ∠ABC = ∠BCA [00] ⇒  ∠DBF = ∠FCE [07]
+002. AB = AC [01] & BD = CE [04] ⇒  AB:BD = AC:CE [08]
+003. AB:BD = AC:CE [08] & A,B,D are collinear [02] & A,E,C are collinear [03] ⇒  BC ∥ DE [09]
+004. F,E,D are collinear [06] & F,B,C are collinear [05] & DE ∥ BC [09] ⇒  ∠DFB = ∠CFE [10]
+005. ∠DBF = ∠FCE [07] & ∠DFB = ∠CFE [10] (Similar Triangles)⇒  DB:EC = DF:EF [11]
+006. DB:EC = DF:EF [11] & EC = BD [04] ⇒  DF = EF
+==========================

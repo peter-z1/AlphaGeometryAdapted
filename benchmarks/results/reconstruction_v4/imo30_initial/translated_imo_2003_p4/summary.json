@@ -1,0 +1,19 @@
+{
+  "backend": "pytorch",
+  "beam_size": 32,
+  "complete": true,
+  "elapsed_seconds": 28.9,
+  "formalization": "a b c = triangle a b c; d = circle d a b c; e = on_circle e d a, on_bline e c a; f = on_circle f d a, on_bline f c a; g = on_line g b e, on_line g a c; h = on_line h f g, on_circle h d a; i = foot i h b c; j = foot j h c a; k = foot k h a b ? cong i j j k",
+  "lm_decode_calls": 0,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 4,
+  "problem_name": "translated_imo_2003_p4",
+  "proof": "benchmarks/results/reconstruction_v4/imo30_initial/translated_imo_2003_p4/proof.txt",
+  "search_depth": 6,
+  "solved": true,
+  "solver_stage": "ddar",
+  "status": "solved",
+  "timeout_seconds": 900
+}

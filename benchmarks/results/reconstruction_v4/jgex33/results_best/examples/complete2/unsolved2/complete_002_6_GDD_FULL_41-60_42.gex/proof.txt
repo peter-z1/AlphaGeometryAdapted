@@ -1,0 +1,36 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G H : Points
+∠BAD = ∠DAC [00]
+E,C,B are collinear [01]
+AE ⟂ BC [02]
+D,F,A are collinear [03]
+BF ⟂ AD [04]
+D,G,A are collinear [05]
+AD ⟂ GC [06]
+H,C,B are collinear [07]
+HC = HB [08]
+
+ * Auxiliary Constructions:
+I : Points
+A,C,I are collinear [09]
+IC = IA [10]
+
+ * Proof steps:
+001. D,F,A are collinear [03] & E,C,B are collinear [01] & AE ⟂ BC [02] & BF ⟂ AD [04] ⇒  ∠BFA = ∠BEA [11]
+002. ∠BFA = ∠BEA [11] ⇒  E,F,A,B are concyclic [12]
+003. E,F,A,B are concyclic [12] ⇒  ∠EFA = ∠EBA [13]
+004. A,C,I are collinear [09] & IC = IA [10] ⇒  I is midpoint of CA [14]
+005. H,C,B are collinear [07] & HC = HB [08] ⇒  H is midpoint of CB [15]
+006. I is midpoint of CA [14] & H is midpoint of CB [15] ⇒  IH ∥ AB [16]
+007. D,G,A are collinear [05] & CG ⟂ AD [06] ⇒  CG ⟂ GA [17]
+008. CG ⟂ GA [17] & I is midpoint of CA [14] ⇒  AI = GI [18]
+009. AI = GI [18] ⇒  ∠IGA = ∠GAI [19]
+010. D,F,A are collinear [03] & ∠BAD = ∠DAC [00] & ∠IGA = ∠GAI [19] & D,G,A are collinear [05] & A,C,I are collinear [09] ⇒  ∠(GI-DF) = ∠(AB-DF) [20]
+011. ∠(GI-DF) = ∠(AB-DF) [20] ⇒  GI ∥ AB [21]
+012. HI ∥ AB [16] & GI ∥ AB [21] ⇒  IG ∥ IH [22]
+013. IG ∥ IH [22] ⇒  H,G,I are collinear [23]
+014. H,C,B are collinear [07] & E,C,B are collinear [01] & D,G,A are collinear [05] & D,F,A are collinear [03] & ∠EFA = ∠EBA [13] & HI ∥ AB [16] & H,G,I are collinear [23] ⇒  ∠EHG = ∠EFG [24]
+015. ∠EHG = ∠EFG [24] ⇒  E,F,G,H are concyclic
+==========================

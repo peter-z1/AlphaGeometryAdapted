@@ -1,0 +1,31 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G : Points
+AB ∥ CD [00]
+AD ∥ BC [01]
+AE ⟂ DE [02]
+∠DAE = ∠EAB [03]
+A,E,F are collinear [04]
+AE ⟂ FB [05]
+B,F,G are collinear [06]
+BF ⟂ GC [07]
+
+ * Auxiliary Constructions:
+: Points
+
+
+ * Proof steps:
+001. A,E,F are collinear [04] & AE ⟂ DE [02] & AE ⟂ FB [05] ⇒  ∠DEA = ∠AFB [08]
+002. A,E,F are collinear [04] & ∠DAE = ∠EAB [03] ⇒  ∠DAE = ∠FAB [09]
+003. ∠DEA = ∠AFB [08] & ∠DAE = ∠FAB [09] (Similar Triangles)⇒  AD:AB = AE:AF [10]
+004. CD ∥ AB [00] ⇒  ∠BDC = ∠DBA [11]
+005. BC ∥ AD [01] & CD ∥ AB [00] ⇒  ∠BCD = ∠DAB [12]
+006. ∠BDC = ∠DBA [11] & ∠BCD = ∠DAB [12] (Similar Triangles)⇒  BC = DA [13]
+007. ∠BDC = ∠DBA [11] & ∠BCD = ∠DAB [12] (Similar Triangles)⇒  DC = BA [14]
+008. B,F,G are collinear [06] & A,E,F are collinear [04] & AE ⟂ DE [02] & AE ⟂ FB [05] & BF ⟂ GC [07] ⇒  ∠BGC = ∠AFB [15]
+009. A,E,F are collinear [04] & ∠DAE = ∠EAB [03] & AD ∥ BC [01] & AB ∥ CD [00] & BF ⟂ GC [07] & AE ⟂ DE [02] & AE ⟂ FB [05] ⇒  ∠BCG = ∠FAB [16]
+010. ∠BGC = ∠AFB [15] & ∠BCG = ∠FAB [16] (Similar Triangles)⇒  BG:BF = BC:BA [17]
+011. AD:AB = AE:AF [10] & BC = DA [13] & DC = BA [14] & BG:BF = BC:BA [17] ⇒  BF:BG = AF:AE [18]
+012. BF:BG = AF:AE [18] & A,E,F are collinear [04] & B,F,G are collinear [06] ⇒  AB ∥ EG
+==========================

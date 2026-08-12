@@ -15,6 +15,8 @@
 
 """Implements Deductive Database (DD)."""
 
+from __future__ import annotations
+
 # pylint: disable=g-multiple-import,g-importing-member
 from collections import defaultdict
 import time

@@ -1,321 +1,197 @@
-# AlphaGeometryRE
+# AlphaGeometry Educational Reconstruction
 
-AlphaGeometryRE is a re-engineered version of [AlphaGeometry](https://github.com/google-deepmind/alphageometry) with a
-goal to [make](https://github.com/google-deepmind/alphageometry/issues/130)
-[it](https://github.com/google-deepmind/alphageometry/issues/116)
-[easy](https://github.com/google-deepmind/alphageometry/issues/96) to use (especially on [Windows](https://github.com/google-deepmind/alphageometry/issues/120)):
+This repository combines the symbolic AlphaGeometry solver with a complete,
+smaller-scale pipeline for generating synthetic geometry data, training an
+auxiliary-construction language model, and evaluating the combined system.
+It is intended for a course lecture and reproducible student experiments.
 
-* Use [ChatLLM.cpp](http://github.com/foldl/chatllm.cpp) for LM inference, no Tensorflow/Jax/Flax.
+The project is based on
+[`foldl/AlphaGeometryRE`](https://github.com/foldl/alphageometryre), which is a
+re-engineering of
+[`google-deepmind/alphageometry`](https://github.com/google-deepmind/alphageometry).
+It is not an official Google DeepMind project and does not contain DeepMind's
+private training data. See [PROVENANCE.md](PROVENANCE.md) for the exact code,
+checkpoint, tokenizer, and dataset lineage.
 
-* Significantly **simplified** _requirements.txt_.
+## What is included
 
-* Indent with **four** spaces (🖕 two spaces).
+- The original symbolic DD+AR geometry engine and AlphaGeometry search loop.
+- Random construction and theorem/proof generation.
+- Strict filtering that keeps examples whose hidden auxiliary point is
+  genuinely needed by DD+AR.
+- Deterministic conversion, deduplication, splitting, and tokenizer training.
+- A 152M-parameter PyTorch causal transformer and inference adapter.
+- Formalized IMO-AG-30 benchmarks, saved proofs, and evaluation summaries.
+- The complete 15,751-example v4 auxiliary fine-tuning split and a 2,000-row
+  pretraining sample in Git-friendly form.
+- A manifest for the full 8.6 GB educational artifact bundle.
 
-## Adapted version
+The large checkpoints and 5.35 GB pretraining split are deliberately outside
+Git. Put the released bundle at
+`artifacts/alphageometry_educational_release_v4/` and verify it with:
 
-This repository is an adapted working version of
-[foldl/AlphaGeometryRE](https://github.com/foldl/alphageometryre), which is
-licensed under the Apache License 2.0. The original repository re-engineers
-DeepMind's [AlphaGeometry](https://github.com/google-deepmind/alphageometry)
-for easier local use.
-
-This adapted version keeps the original Apache License 2.0 license file and
-preserves the upstream copyright and license notices. It contains local changes
-and additions for lecture-note development, experimentation, visualization, and
-synthetic data generation. These changes are independent adaptations and are not
-endorsed by, or affiliated with, the original AlphaGeometryRE authors or
-DeepMind.
-
-For the upstream project, see
-[foldl/AlphaGeometryRE](https://github.com/foldl/alphageometryre).
-
-Plan/Roadmap:
-
-* [x] LM Beam search.
-
-* [ ] Rewrite in Nim.
-
-* [ ] A new description language like [this](https://reference.wolfram.com/legacy/language/v14/guide/PlaneGeometry.html).
-
-* [ ] Catch up with AlphaGeometry2.
-
-## Documentation
-
-
-
---------
-
-# Solving Olympiad Geometry without Human Demonstrations
-
-
-This repository contains the code necessary to
-reproduce DDAR and AlphaGeometry,
-the two geometry theorem provers
-introduced in the [Nature 2024](https://www.nature.com/articles/s41586-023-06747-5) paper:
-
-*<center>"Solving Olympiad Geometry without Human Demonstrations".</center>*
-
-</br>
-
-<center>
-<img alt="fig1" width="800px" src="fig1.svg">
-</center>
-
-## Get started
-
-1. Get the source code.
-
-    Either clone this repository or download it.
-
-1. Install ChatLLM.cpp DLLs (or .so whatever).
-
-    You can find prebuilt DLLs in releases. Or, you can [build](https://github.com/foldl/chatllm.cpp/blob/master/docs/binding.md#precondition) `libchatllmb` from source.
-    Copy these DLLs into `src/chatllm/bindings`.
-
-1. Install Python dependencies.
-
-    ```sh
-    pip install -r requirements.txt
-    ```
-
-    Optionally, you can create a virtual environment, and then install dependencies into it.
-
-1. Run `run_tests.bat` to check if everything is Ok.
-
-    The language model will be downloaded automatically.
-
-1. Run `test.bat` to solve a IMO problem with the AlphaGeometry solver.
-
-## Command line flags
-
-A list of command line flags.
-
-* `--mode`: solver selection. (default: `ddar`)
-
-    1. `--mode=ddar`: select the DDAR solver.
-    1. `--mode=alphageometry`: select the AlphaGeometry solver.
-
-* `--problems_file`: problem file
-
-    Example: `--problems_file examples\examples.txt`.
-
-* `--problem_name`: name of a problem in the given problem file
-
-    Example: `--problem_name orthocenter`. `orthocenter` is a problem in `examples\examples.txt`.
-
-* `--defs_file` & `--rules_file`: definitions & deduction rules.
-
-    Defaults to `data\defs` & `data\rules.txt` respectively.
-
-* `--batch_size`: beam size of the proof search. (default: 2)
-
-* `--beam_size`: beam size of the proof search. (default: 2)
-
-* `--search_depth`: search depth of the proof search. (default: 2)
-
-NOTE: The results in the paper can be obtained by setting
-`--batch_size=32`, `--beam_size=512`, `--search_depth=16`.
-But, not confirmed yet.
-
-### Example of DDAR
-
-Below we showed DDAR solver solving IMO 2000 P1:
-
-```batch
-python src\alphageometry.py ^
-  --problems_file=examples/imo_ag_30.txt ^
-  --problem_name=translated_imo_2000_p1
+```bash
+python scripts/verify_release.py \
+  artifacts/alphageometry_educational_release_v4
 ```
 
-Expect the following output
+## Repository map
 
-```shell
-INFO - translated_imo_2000_p1
-INFO - a b = segment a b; g1 = on_tline g1 a a b; g2 = on_tline g2 b b a; m = on_circle m g1 a, on_circle m g2 b; n = on_circle n g1 a, on_circle n g2 b; c = on_pline c m a b, on_circle c g1 a; d = on_pline d m a b, on_circle d g2 b; e = on_line e a c, on_line e b d; p = on_line p a n, on_line p c d; q = on_line q b n, on_line q c d ? cong e p e q
-INFO - Depth 1/1000 time = 1.7772269248962402
-INFO - Depth 2/1000 time = 5.63526177406311
-INFO - Depth 3/1000 time = 6.883412837982178
-INFO - Depth 4/1000 time = 10.275688409805298
-INFO - Depth 5/1000 time = 12.048273086547852
-INFO -
-==========================
- * From theorem premises:
-A B G1 G2 M N C D E P Q : Points
-AG_1 ⟂ AB [00]
-BA ⟂ G_2B [01]
-G_2M = G_2B [02]
-G_1M = G_1A [03]
+| Path | Purpose |
+| --- | --- |
+| `src/alphageometry.py` | DD+AR plus auxiliary-LM proof search |
+| `src/generate_geometry_corpus.py` | Shared-closure generator for pretraining and auxiliary candidates |
+| `src/filter_strict_auxiliary.py` | Rebuilds the visible problem and verifies that DD+AR needs the hidden point |
+| `src/synthetic_data_to_lm.py` | Converts constructive records to LM prompt/target strings |
+| `src/prepare_lm_dataset.py` | Deduplicates and creates stable train/validation/test splits |
+| `src/train_geometry_tokenizer.py` | Trains the symbolic SentencePiece word tokenizer |
+| `src/train_demo_lm.py` | Trains the PyTorch causal transformer on CPU or GPU |
+| `src/pytorch_lm_inference.py` | Uses a trained PyTorch checkpoint during proof search |
+| `data/defs.txt`, `data/rules.txt` | AlphaGeometry construction language and deduction rules |
+| `data/generated/` | Small, committed teaching data and the complete v4 auxiliary split |
+| `benchmarks/` | Formalizations, portable runners, diagrams, proofs, and results |
+| `configs/reconstruction_v4/` | Sanitized configuration of the selected model |
+| `release/manifest-v4.json` | Sizes and SHA-256 hashes for large release artifacts |
 
-...
-[log omitted]
-...
+## Installation
 
-036. ∠QEB = ∠(QP-EA) [46] & ∠(BE-QP) = ∠AEP [55] ⇒  ∠EQP = ∠QPE [56]
-037. ∠PQE = ∠EPQ [56] ⇒  EP = EQ
+Python 3.10 or newer is recommended.
 
-==========================
+```bash
+python -m venv .venv
+. .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-The output first includes a list of relevant premises that it uses,
-and then proof steps that gradually build up the proof.
-All predicates are numbered to track how they are derived
-from the premises, and to show that the proof is fully justified.
+Install the optional training stack when generating data, training a
+tokenizer/model, or using the PyTorch auxiliary model:
 
-TIP: Additionally passing the flag `--out_file=path/to/output/text/file.txt`
-will write the proof to a text file.
-
-Running on all problems in `imo_ag_30.txt` will yield solutions to
-14 of them, as reported in Table 1 in the paper.
-
-### Example of AlphaGeometry
-
-As a simple example, we load `--problem_name=orthocenter`
-from `--problem_file=examples.txt`.
-This time, we pass `--mode=alphageometry` to use the AlphaGeometry solver.
-
-```shell
-python src/alphageometry.py ^
-    --problems_file=examples/examples.txt ^
-    --problem_name=orthocenter ^
-    --mode=alphageometry ^
-    --beam_size=2 ^
-    --search_depth=2
+```bash
+pip install -r requirements-training.txt
 ```
 
-Expect the following output:
+Run the unit tests:
 
-```shell
-...
-[log omitted]
-...
-INFO - orthocenter
-INFO - a b c = triangle a b c; d = on_tline d b a c, on_tline d c a b ? perp a d b c
-INFO - Depth 1/1000 time = 0.009987592697143555 branch = 4
-INFO - Depth 2/1000 time = 0.00672602653503418 branch = 0
-INFO - DD+AR failed to solve the problem.
-INFO - Depth 0. There are 1 nodes to expand:
-INFO - {S} a : ; b : ; c : ; d : T a b c d 00 T a c b d 01 ? T a d b c {F1} x00
-INFO - Decoding from {S} a : ; b : ; c : ; d : T a b c d 00 T a c b d 01 ? T a d b c {F1} x00
-...
-[log omitted]
-...
-INFO - LM output (score=-0.017550): "e : C a c e 02 C b d e 03 ;"
-INFO - Translation: "e = on_line e a c, on_line e b d"
-
-INFO - Solving: "a b c = triangle a b c; d = on_tline d b a c, on_tline d c a b; e = on_line e a c, on_line e b d ? perp a d b c"
-INFO -
-INFO - a b c = triangle a b c; d = on_tline d b a c, on_tline d c a b; e = on_line e a c, on_line e b d ? perp a d b c
-INFO - Depth 1/1000 time = 0.021120786666870117
-INFO - Depth 2/1000 time = 0.033370018005371094
-INFO - Depth 3/1000 time = 0.04297471046447754
-INFO -
-==========================
- * From theorem premises:
-A B C D : Points
-BD ⟂ AC [00]
-CD ⟂ AB [01]
-
- * Auxiliary Constructions:
-E : Points
-E,B,D are collinear [02]
-E,C,A are collinear [03]
-
- * Proof steps:
-001. E,B,D are collinear [02] & E,C,A are collinear [03] & BD ⟂ AC [00] ⇒  ∠BEA = ∠CED [04]
-002. E,B,D are collinear [02] & E,C,A are collinear [03] & BD ⟂ AC [00] ⇒  ∠BEC = ∠AED [05]
-003. A,E,C are collinear [03] & E,B,D are collinear [02] & AC ⟂ BD [00] ⇒  EC ⟂ EB [06]
-004. EC ⟂ EB [06] & CD ⟂ AB [01] ⇒  ∠(EC-BA) = ∠(EB-CD) [07]
-005. E,C,A are collinear [03] & E,B,D are collinear [02] & ∠(EC-BA) = ∠(EB-CD) [07] ⇒  ∠BAE = ∠CDE [08]
-006. ∠BEA = ∠CED [04] & ∠BAE = ∠CDE [08] (Similar Triangles)⇒  EB:EC = EA:ED [09]
-007. EB:EC = EA:ED [09] & ∠BEC = ∠AED [05] (Similar Triangles)⇒  ∠BCE = ∠ADE [10]
-008. EB:EC = EA:ED [09] & ∠BEC = ∠AED [05] (Similar Triangles)⇒  ∠EBC = ∠EAD [11]
-009. ∠BCE = ∠ADE [10] & E,C,A are collinear [03] & E,B,D are collinear [02] & ∠EBC = ∠EAD [11] ⇒  AD ⟂ BC
-==========================
-
-INFO - Solved.
+```bash
+bash run_tests.sh
 ```
 
-NOTE: Point `H` is automatically renamed to `D`,
-as the LM is trained on synthetic problems
-where the points are named alphabetically, and so it expects
-the same during test time.
+## Solve with DD+AR
 
-As can be seen in the output, initially DDAR failed to solve the problem.
-The LM proposes two auxiliary constructions (because `--batch_size=2`):
+DD+AR requires no language-model checkpoint:
 
-* `e = on_line e a c, on_line e b d`, i.e.,
-`E` is the intersection of `AC` and `BD`.
-This construction has a score of `-0.017550`.
+```bash
+python src/alphageometry.py \
+  --problems_file examples/examples.txt \
+  --problem_name orthocenter \
+  --mode ddar
+```
 
-* `e = eqdistance e c a b, eqdistance e b a c`, i.e.,
-construct `E` as the intersection of circle (center=C, radius=AB) and
-circle (center=B, radius=AC). This construction has a lower score (`-4.05149`)
-than the previous.
+The proof consists only of deductions from `data/rules.txt` and algebraic
+reasoning.
 
-Since the first construction has a higher score, DDAR attempted it first and
-found the solution right away. The proof search therefore terminates and
-there is no second iteration.
+## Solve with the reconstruction model
 
-## Source code description
+After placing the release bundle under `artifacts/`:
 
-Files in this repository include python modules/scripts to run the solvers and
-resource files necessary for the script to execute. We listed below
-each of them and their description.
+```bash
+python src/alphageometry.py \
+  --problems_file examples/examples.txt \
+  --problem_name orthocenter \
+  --mode alphageometry \
+  --backend pytorch \
+  --checkpoint artifacts/alphageometry_educational_release_v4/models/finetuned/checkpoint_latest.pt \
+  --tokenizer artifacts/alphageometry_educational_release_v4/tokenizer/ag_word_757_pretrain_rich_v2.model \
+  --device cuda \
+  --batch_size 8 \
+  --beam_size 8 \
+  --search_depth 2
+```
 
-| File name              | Description                                                                        |
-|------------------------|------------------------------------------------------------------------------------|
-| `geometry.py`          | Implements nodes (Point, Line, Circle, etc) in the proof state graph.              |
-| `numericals.py`        | Implements the numerical engine in the dynamic geometry environment.               |
-| `graph_utils.py`       | Implements utilities for the proof state graph.                                    |
-| `graph.py`             | Implements the proof state graph.                                                  |
-| `problem.py`           | Implements the classes that represent the problem premises, conclusion, DAG nodes. |
-| `dd.py`                | Implements DD and its traceback.                                                   |
-| `ar.py`                | Implements AR and its traceback.                                                   |
-| `trace_back.py`        | Implements the recursive traceback and dependency difference algorithm.            |
-| `ddar.py`              | Implements the combination DD+AR.                                                  |
-| `lm_inference.py`      | Implements an interface to a trained LM to perform decoding.                       |
-| `alphageometry.py`     | Main script that loads problems, calls DD+AR or AlphaGeometry solver, and prints solutions.   |
-| `pretty.py`            | Pretty formating the solutions output by solvers.                                  |
-| `test_xx.py`           | Tests for the corresponding module.                                                |
-| `run.sh`/`run.bat`     | Script to run a demo in README.                                                    |
-| `run_tests.sh`/`run_tests.bat` | Script to execute the test suite.                                          |
+Use `--device cpu` on a machine without CUDA. The solver itself is CPU-based;
+the GPU accelerates only neural decoding. Search branches can still be costly
+because every proposed construction is rebuilt and checked by DD+AR.
 
+The legacy AlphaGeometryRE/ChatLLM path remains available with
+`--backend chatllm --model <model.bin>`. Its native library and converted
+third-party model are optional and are not part of this repository. Install its
+build helpers with `pip install -r requirements-chatllm.txt`, then run
+`scripts/install_chatllm_native.sh` if that comparison backend is needed.
 
-Resource files:
+## Small end-to-end teaching run
 
-| Resource file name     | Description                                                                        |
-|------------------------|------------------------------------------------------------------------------------|
-| `data/defs.txt`             | Definitions of different geometric construction actions.                      |
-| `data/rules.txt`            | Deduction rules for DD.                                                       |
-| `examples/imo_ag_30.txt`    | Problems in IMO-AG-30.                                                        |
-| `examples/jgex_ag_231.txt`  | Problems in JGEX-AG-231.                                                      |
+Generate shared proof and auxiliary-candidate streams:
 
-## Original AlphaGeometry License Information
+```bash
+python src/generate_geometry_corpus.py \
+  --num_diagrams 10 \
+  --max_attempts 100 \
+  --seed 1 \
+  --construction_set expanded \
+  --out_dir outputs/teaching/corpus
+```
 
-### Code License
+Strict auxiliary filtering is the important step: an auxiliary candidate is
+not training evidence until the visible problem has been rebuilt and DD+AR has
+failed without the hidden construction. The full commands and invariants are
+in [SYNTHETIC_DATA_PIPELINE.md](SYNTHETIC_DATA_PIPELINE.md).
 
-Copyright 2023 DeepMind Technologies Limited
+For a fast model demonstration, train on the committed corpus rather than
+waiting for generation:
 
-All software is licensed under the Apache License, Version 2.0 (Apache 2.0);
-you may not use this file except in compliance with the Apache 2.0 license.
-You may obtain a copy of the Apache 2.0 license at:
-https://www.apache.org/licenses/LICENSE-2.0
+```bash
+python src/train_geometry_tokenizer.py \
+  data/generated/pretraining_sample/train.txt \
+  data/generated/auxiliary_v4/train.txt \
+  --model_prefix outputs/teaching/tokenizer/ag_word
 
-All other materials are licensed under the Creative Commons Attribution 4.0
-International License (CC-BY). You may obtain a copy of the CC-BY license at:
-https://creativecommons.org/licenses/by/4.0/legalcode
+python src/train_demo_lm.py \
+  --train data/generated/auxiliary_v4/train.txt \
+  --val data/generated/auxiliary_v4/val.txt \
+  --tokenizer outputs/teaching/tokenizer/ag_word.model \
+  --out_dir outputs/teaching/tiny_lm \
+  --max_steps 500 \
+  --batch_size 8 \
+  --block_size 192 \
+  --d_model 256 --n_layers 4 --n_heads 4 --d_ff 1024 \
+  --device cuda --amp
+```
 
-Unless required by applicable law or agreed to in writing, all software and
-materials distributed here under the Apache 2.0 or CC-BY licenses are
-distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-either express or implied. See the licenses for the specific language governing
-permissions and limitations under those licenses.
+This is a classroom overfit/smoke test, not the selected v4 model.
 
-### Model Parameters License
+## Benchmarks
 
-The AlphaGeometry checkpoints and vocabulary are made available
-under the terms of the Creative Commons Attribution 4.0
-International (CC BY 4.0) license.
-You can find details at:
-https://creativecommons.org/licenses/by/4.0/legalcode
+- `benchmarks/imo_ag_30/` contains the canonical 30-problem suite and saved
+  reconstruction results.
+- `benchmarks/official_alphageometry_canary/` records reference-checkpoint
+  experiments used to validate the comparison setup.
 
+Large-search results are stochastic and budget-dependent. Keep DD+AR solves,
+genuine auxiliary solves, timeouts, and invalid/no-op LM proposals separate
+when reporting a score.
+
+## Reconstruction scale
+
+The selected v4 model has 152,057,856 parameters, 12 layers, hidden size 1024,
+8 heads, feed-forward size 4096, and context length 512. It was pretrained on
+5,400,640 unique theorem/proof strings and fine-tuned on 15,751 unique strict
+auxiliary examples.
+
+This mirrors the two-stage AlphaGeometry idea on a much smaller scale. It is
+not architecture- or data-identical to DeepMind's Meliad model, which used a
+1024-token context and far larger private corpora. Detailed comparison and
+hashes are in [PROVENANCE.md](PROVENANCE.md).
+
+## Publishing the large artifacts
+
+Do not commit `.pt` or `.bin` model files to ordinary Git history. Publish the
+versioned bundle separately (for example as a GitHub Release or archival
+dataset), attach `release/manifest-v4.json`, and document its permanent URL.
+The `.gitignore` already excludes local artifact and output directories.
+
+## License
+
+Apache License 2.0. See [LICENSE](LICENSE), [NOTICE](NOTICE), and
+[PROVENANCE.md](PROVENANCE.md). Upstream names and model results remain the
+property of their respective authors; this educational adaptation is not
+endorsed by them.

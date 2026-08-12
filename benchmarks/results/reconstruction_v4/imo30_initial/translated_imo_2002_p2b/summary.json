@@ -1,0 +1,19 @@
+{
+  "backend": "pytorch",
+  "beam_size": 32,
+  "complete": true,
+  "elapsed_seconds": 2.184,
+  "formalization": "a b = segment a b; c = midpoint c a b; d = on_circle d c a; e = on_circle e c a, on_bline e d a; f = on_bline f c d, on_circle f c a; g = on_bline g c d, on_circle g c a; h = on_pline h c d e, on_line h d b ? eqangle b f b h b h b g",
+  "lm_decode_calls": 0,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 3,
+  "problem_name": "translated_imo_2002_p2b",
+  "proof": "benchmarks/results/reconstruction_v4/imo30_initial/translated_imo_2002_p2b/proof.txt",
+  "search_depth": 6,
+  "solved": true,
+  "solver_stage": "ddar",
+  "status": "solved",
+  "timeout_seconds": 900
+}

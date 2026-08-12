@@ -1,0 +1,20 @@
+{
+  "backend": "pytorch",
+  "beam_size": 128,
+  "complete": true,
+  "elapsed_seconds": 3600.008,
+  "error": "exceeded 3600 seconds",
+  "formalization": "a b c = triangle a b c; d = circle d a b c; e = incenter e a b c; f = on_line f a e, on_circle f d a; g = on_line g b c; h = on_aline h a c b a g, on_circle h d a; i = midpoint i e g; j = on_line j f i, on_line j h e ? cong d a d j",
+  "lm_decode_calls": 48,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 13,
+  "problem_name": "translated_imo_2010_p2",
+  "proof": null,
+  "search_depth": 12,
+  "solved": null,
+  "solver_stage": "lm_auxiliary_search",
+  "status": "timeout",
+  "timeout_seconds": 3600
+}

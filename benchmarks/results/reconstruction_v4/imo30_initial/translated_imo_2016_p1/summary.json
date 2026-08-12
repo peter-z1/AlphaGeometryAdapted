@@ -1,0 +1,19 @@
+{
+  "backend": "pytorch",
+  "beam_size": 32,
+  "complete": true,
+  "elapsed_seconds": 37.525,
+  "formalization": "a b c = triangle a b c; d = angle_bisector d b a c, on_bline d a b; e = on_tline e b d b, on_line e a d; f = on_line f a c, on_bline f a e; g = angle_mirror g e a f, on_bline g a f; h = midpoint h e d; i = parallelogram g a h i; j = on_line j d i, on_line j g h ? coll j b f",
+  "lm_decode_calls": 0,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 22,
+  "problem_name": "translated_imo_2016_p1",
+  "proof": "benchmarks/results/reconstruction_v4/imo30_initial/translated_imo_2016_p1/proof.txt",
+  "search_depth": 6,
+  "solved": true,
+  "solver_stage": "ddar",
+  "status": "solved",
+  "timeout_seconds": 900
+}

@@ -1,0 +1,19 @@
+
+==========================
+ * From theorem premises:
+A D E F : Points
+AE ⟂ AD [00]
+F,E,A are collinear [01]
+AE = AF [02]
+
+ * Auxiliary Constructions:
+K M : Points
+K,D,A are collinear [03]
+D,J,M are collinear [04]
+K,M,A are collinear [05]
+
+ * Proof steps:
+001. F,E,A are collinear [01] & AE = AF [02] ⇒  A is midpoint of FE [06]
+002. D,J,M are collinear [04] & K,M,A are collinear [05] & K,D,A are collinear [03] & F,E,A are collinear [01] & AD ⟂ AE [00] ⇒  JA ⟂ FE [07]
+003. A is midpoint of FE [06] & JA ⟂ FE [07] ⇒  JF = JE
+==========================

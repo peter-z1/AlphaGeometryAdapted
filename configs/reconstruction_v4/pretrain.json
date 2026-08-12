@@ -1,0 +1,30 @@
+{
+  "dataset": "pretraining_rich_v2",
+  "tokenizer": "reconstruction_v4",
+  "model": {
+    "block_size": 512,
+    "d_model": 1024,
+    "n_layers": 12,
+    "n_heads": 8,
+    "d_ff": 4096,
+    "dropout": 0.1,
+    "vocab_size": 368,
+    "num_parameters": 152057856
+  },
+  "training": {
+    "max_steps": 30000,
+    "batch_size": 4,
+    "grad_accum_steps": 8,
+    "learning_rate": 0.0001,
+    "warmup_steps": 1000,
+    "weight_decay": 0.1,
+    "clip_grad_norm": 1.0,
+    "seed": 7,
+    "amp": true
+  },
+  "examples": {
+    "train": 5292720,
+    "validation": 54144,
+    "test": 53776
+  }
+}

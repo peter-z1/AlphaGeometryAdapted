@@ -1,0 +1,45 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G H I : Points
+∠CBA = ∠ACB [00]
+AB = AC [01]
+BD ⟂ AB [02]
+DE = DB [03]
+DF = DB [04]
+F,E,A are collinear [05]
+DG = DB [06]
+B,G,C are collinear [07]
+DH = DB [08]
+F,H,C are collinear [09]
+DI = DB [10]
+I,C,E are collinear [11]
+
+ * Auxiliary Constructions:
+: Points
+
+
+ * Proof steps:
+001. DE = DB [03] & DG = DB [06] & DF = DB [04] & DH = DB [08] & DI = DB [10] ⇒  I,B,H,G are concyclic [12]
+002. DH = DB [08] & DI = DB [10] & DF = DB [04] & DG = DB [06] & DE = DB [03] & I,B,H,G are concyclic [12] ⇒  I,E,G,H are concyclic [13]
+003. DI = DB [10] & DG = DB [06] ⇒  D is the circumcenter of \Delta BIG [14]
+004. D is the circumcenter of \Delta BIG [14] & BD ⟂ AB [02] ⇒  ∠ABI = ∠BGI [15]
+005. B,G,C are collinear [07] & ∠ABI = ∠BGI [15] & ∠CBA = ∠ACB [00] ⇒  ∠(CA-BG) = ∠GIB [16]
+006. I,G,H,B are concyclic [12] ⇒  ∠IHG = ∠IBG [17]
+007. B,G,C are collinear [07] & ∠IHG = ∠IBG [17] ⇒  ∠HIB = ∠HGB [18]
+008. ∠(CA-BG) = ∠GIB [16] & ∠HIB = ∠HGB [18] ⇒  ∠(AC-GI) = ∠GHI [19]
+009. DF = DB [04] & DE = DB [03] ⇒  D is the circumcenter of \Delta BFE [20]
+010. D is the circumcenter of \Delta BFE [20] & BD ⟂ AB [02] ⇒  ∠ABF = ∠BEF [21]
+011. ∠ABF = ∠BEF [21] & F,E,A are collinear [05] ⇒  ∠ABF = ∠BEA [22]
+012. F,E,A are collinear [05] & ∠ABF = ∠BEF [21] ⇒  ∠AFB = ∠EBA [23]
+013. ∠AFB = ∠EBA [23] & ∠ABF = ∠BEA [22] (Similar Triangles)⇒  AF:AB = AB:AE [24]
+014. AF:AB = AB:AE [24] & AB = AC [01] ⇒  FA:CA = CA:EA [25]
+015. F,E,A are collinear [05] ⇒  ∠CAE = ∠CAF [26]
+016. FA:CA = CA:EA [25] & ∠CAE = ∠CAF [26] (Similar Triangles)⇒  ∠ACE = ∠CFA [27]
+017. DG = DB [06] & DH = DB [08] & DF = DB [04] & DE = DB [03] ⇒  E,G,H,F are concyclic [28]
+018. E,G,H,F are concyclic [28] ⇒  ∠EGH = ∠EFH [29]
+019. I,C,E are collinear [11] & ∠ACE = ∠CFA [27] & F,E,A are collinear [05] & ∠EGH = ∠EFH [29] & F,H,C are collinear [09] ⇒  ∠HGE = ∠ACI [30]
+020. ∠(AC-GI) = ∠GHI [19] & ∠HGE = ∠ACI [30] ⇒  ∠(IH-GE) = ∠GIC [31]
+021. I,C,E are collinear [11] & ∠(IH-GE) = ∠GIC [31] ⇒  ∠IEG = ∠GIH [32]
+022. I,E,G,H are concyclic [13] & ∠IEG = ∠GIH [32] ⇒  IG = GH
+==========================

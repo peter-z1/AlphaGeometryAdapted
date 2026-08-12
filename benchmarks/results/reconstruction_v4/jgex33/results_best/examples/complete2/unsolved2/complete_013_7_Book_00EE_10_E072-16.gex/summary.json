@@ -1,0 +1,18 @@
+{
+  "backend": "pytorch",
+  "beam_size": 32,
+  "complete": true,
+  "elapsed_seconds": 391.542,
+  "formalization": "a b c = triangle a b c; d = parallelogram a b c d; e = on_line e c d; f = on_line f a d, eqdistance f c a e; g = on_line g a e, on_line g c f ? eqangle g a g b g b g c",
+  "lm_decode_calls": 88,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 164,
+  "problem_name": "examples/complete2/unsolved2/complete_013_7_Book_00EE_10_E072-16.gex",
+  "proof": null,
+  "search_depth": 6,
+  "solved": false,
+  "status": "unsolved",
+  "timeout_seconds": 900
+}

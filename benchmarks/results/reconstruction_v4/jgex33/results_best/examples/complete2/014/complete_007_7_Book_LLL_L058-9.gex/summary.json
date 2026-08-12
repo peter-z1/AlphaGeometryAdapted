@@ -1,0 +1,19 @@
+{
+  "backend": "pytorch",
+  "beam_size": 32,
+  "complete": true,
+  "elapsed_seconds": 1.91,
+  "formalization": "a b = segment a b; c = on_bline c a b; d = on_tline d b a b; e = intersection_lt e c d a a b ? cong e c c d",
+  "lm_decode_calls": 1,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 22,
+  "problem_name": "examples/complete2/014/complete_007_7_Book_LLL_L058-9.gex",
+  "proof": "benchmarks/results/reconstruction_v4/jgex33/results_best/examples/complete2/014/complete_007_7_Book_LLL_L058-9.gex/proof.txt",
+  "search_depth": 6,
+  "solved": true,
+  "solver_stage": "lm_auxiliary_then_ddar",
+  "status": "solved",
+  "timeout_seconds": 900
+}

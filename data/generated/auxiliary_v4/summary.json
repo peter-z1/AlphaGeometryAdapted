@@ -1,0 +1,10 @@
+{
+  "duplicates": 249,
+  "read": 16000,
+  "splits": {
+    "test": 677,
+    "train": 14284,
+    "val": 790
+  },
+  "written": 15751
+}

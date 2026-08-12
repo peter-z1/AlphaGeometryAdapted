@@ -1,0 +1,19 @@
+{
+  "backend": "pytorch",
+  "beam_size": 32,
+  "complete": true,
+  "elapsed_seconds": 158.749,
+  "formalization": "a b = segment a b; c = on_circle c a b; d = on_circle d a b; e = lc_tangent e c a, lc_tangent e d a; f = lc_tangent f b a, on_line f c e; g = on_pline g c b f, on_line g b d; h = on_line h d e, on_line h b f; i = on_line i b e, on_line i c g ? cong c i i g",
+  "lm_decode_calls": 1,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 183,
+  "problem_name": "examples/complete2/unsolved/complete_015_7_Book_00EE_08_E061-61.gex",
+  "proof": "benchmarks/results/reconstruction_v4/jgex33/results_best/examples/complete2/unsolved/complete_015_7_Book_00EE_08_E061-61.gex/proof.txt",
+  "search_depth": 6,
+  "solved": true,
+  "solver_stage": "lm_auxiliary_then_ddar",
+  "status": "solved",
+  "timeout_seconds": 900
+}

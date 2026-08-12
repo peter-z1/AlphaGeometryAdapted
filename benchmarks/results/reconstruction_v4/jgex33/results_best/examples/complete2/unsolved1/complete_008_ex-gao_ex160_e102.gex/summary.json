@@ -1,0 +1,19 @@
+{
+  "backend": "pytorch",
+  "beam_size": 32,
+  "complete": true,
+  "elapsed_seconds": 37.899,
+  "formalization": "a b c = triangle a b c; d = on_line d a c, angle_bisector d c b a; e = on_line e a b, angle_bisector e b c a; f = foot f a c e; g = foot g a b d ? para g f b c",
+  "lm_decode_calls": 2,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 205,
+  "problem_name": "examples/complete2/unsolved1/complete_008_ex-gao_ex160_e102.gex",
+  "proof": "benchmarks/results/reconstruction_v4/jgex33/results_best/examples/complete2/unsolved1/complete_008_ex-gao_ex160_e102.gex/proof.txt",
+  "search_depth": 6,
+  "solved": true,
+  "solver_stage": "lm_auxiliary_then_ddar",
+  "status": "solved",
+  "timeout_seconds": 900
+}

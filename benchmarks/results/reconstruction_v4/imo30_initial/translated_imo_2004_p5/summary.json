@@ -1,0 +1,19 @@
+{
+  "backend": "pytorch",
+  "beam_size": 32,
+  "complete": true,
+  "elapsed_seconds": 1.158,
+  "formalization": "a b c = triangle a b c; d = circle d a b c; e = on_circle e d a; f = on_aline f b c a b e, on_aline f e c a e b ? cong a f c f",
+  "lm_decode_calls": 0,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 6,
+  "problem_name": "translated_imo_2004_p5",
+  "proof": "benchmarks/results/reconstruction_v4/imo30_initial/translated_imo_2004_p5/proof.txt",
+  "search_depth": 6,
+  "solved": true,
+  "solver_stage": "ddar",
+  "status": "solved",
+  "timeout_seconds": 900
+}

@@ -1,0 +1,9 @@
+{
+  "method": "first_n_lines",
+  "requested_lines": 2000,
+  "copied_lines": 2000,
+  "source_name": "train.txt",
+  "output_name": "train.txt",
+  "output_bytes": 1538642,
+  "output_sha256": "83f44f1e433ac727a0ea88ee24a2b42d0fa263cc3604412a85e5b1886b783afd"
+}

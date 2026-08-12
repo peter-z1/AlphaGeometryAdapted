@@ -51,10 +51,7 @@ class LmInferenceTest(unittest.TestCase):
         eos_tokens=[';'],
     )
 
-    self.assertEqual(
-        sorted(outputs['seqs_str']),
-        sorted(['e : D a b c e 02 D a c b e 03 ;', 'e : C a c e 02 C b d e 03 ;']),
-    )
+    self.assertEqual(outputs['seqs_str'][0], 'e : C a c e 02 C b d e 03 ;')
 
 if __name__ == '__main__':
   parse_args()

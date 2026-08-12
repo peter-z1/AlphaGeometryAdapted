@@ -1,0 +1,56 @@
+{
+  "release": "alphageometry-educational-v4",
+  "model_family": "AlphaGeometry-style PyTorch reconstruction",
+  "artifacts": [
+    {
+      "path": "models/pretrain/checkpoint_latest.pt",
+      "bytes": 1824879995,
+      "sha256": "dd1d87e800c1afb0aa9c1bd921e561a88dff23ca70f3ecb04634922fbe1541b2"
+    },
+    {
+      "path": "models/finetuned/checkpoint_latest.pt",
+      "bytes": 1824880315,
+      "sha256": "dbe698a6755d7ec27b16ac431d4d8b865f1a5431c2eede61ab8c2ef5eb4d0df6"
+    },
+    {
+      "path": "tokenizer/ag_word_757_pretrain_rich_v2.model",
+      "bytes": 247553,
+      "sha256": "0198213fec7569204dac59e65149182d8698d29a02fa1aa1763d2812c1b2708b"
+    },
+    {
+      "path": "datasets/pretraining_rich_v2/train.txt",
+      "bytes": 5242435817,
+      "sha256": "0b5219f4673f329092afbe6be54ad74e00e1fa361054da701599ff6733a0b626"
+    },
+    {
+      "path": "datasets/pretraining_rich_v2/val.txt",
+      "bytes": 54039243,
+      "sha256": "cebc764b58618063540cdf664e59d3758c451d07eee9a19eb73c6465a7716db0"
+    },
+    {
+      "path": "datasets/pretraining_rich_v2/test.txt",
+      "bytes": 53121483,
+      "sha256": "0a0085f308d996aac7146177bdb87aaedb640becfcced21cdacb30e7b828c1d3"
+    },
+    {
+      "path": "datasets/auxiliary_combined_v4/auxiliary_strict.jsonl",
+      "bytes": 85862020,
+      "sha256": "163f5e470af5ad791f4a0a3b4a3b63041105f9b5955368dae9dd4ab6c229cc72"
+    },
+    {
+      "path": "datasets/auxiliary_combined_v4/auxiliary_dataset/train.txt",
+      "bytes": 3243873,
+      "sha256": "76dd6d22cc125f31d0992b4220842d1de18943f884f6db43e7b1126840510914"
+    },
+    {
+      "path": "datasets/auxiliary_combined_v4/auxiliary_dataset/val.txt",
+      "bytes": 180573,
+      "sha256": "285c3bc5871aaf5a0fa801aee8bde4e8bff75ed2391b5676f8fad5e569162ca0"
+    },
+    {
+      "path": "datasets/auxiliary_combined_v4/auxiliary_dataset/test.txt",
+      "bytes": 155256,
+      "sha256": "3aa47a594eb2b37c56a25902dd57e5f68031f951e4638d2b3edea4bf40b5bbf3"
+    }
+  ]
+}

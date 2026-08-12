@@ -1,0 +1,41 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G I : Points
+BA = BC [00]
+B,C,A are collinear [01]
+DA = DB [02]
+DE = DB [03]
+FB = FC [04]
+FE = FB [05]
+AG ⟂ AD [06]
+FG = FB [07]
+DI = DB [08]
+G,E,I are collinear [09]
+
+ * Auxiliary Constructions:
+H : Points
+FH = FB [10]
+DA ⟂ HA [11]
+
+ * Proof steps:
+001. FB = FC [04] & FH = FB [10] & FE = FB [05] ⇒  F is the circumcenter of \Delta CHE [12]
+002. DE = DB [03] & DI = DB [08] & DA = DB [02] ⇒  I,B,E,A are concyclic [13]
+003. I,B,E,A are concyclic [13] ⇒  ∠IEB = ∠IAB [14]
+004. FE = FB [05] & FH = FB [10] & FG = FB [07] ⇒  B,E,H,G are concyclic [15]
+005. G,H,B,E are concyclic [15] ⇒  ∠GHB = ∠GEB [16]
+006. DA ⟂ HA [11] & AG ⟂ AD [06] & ∠IEB = ∠IAB [14] & G,E,I are collinear [09] & ∠GHB = ∠GEB [16] ⇒  ∠BHA = ∠BAI [17]
+007. DI = DB [08] & DA = DB [02] ⇒  D is the circumcenter of \Delta AIB [18]
+008. D is the circumcenter of \Delta AIB [18] & AG ⟂ AD [06] ⇒  ∠BAG = ∠BIA [19]
+009. DA ⟂ HA [11] & AG ⟂ AD [06] & ∠BAG = ∠BIA [19] ⇒  ∠BAH = ∠BIA [20]
+010. ∠BHA = ∠BAI [17] & ∠BAH = ∠BIA [20] (Similar Triangles)⇒  BH:BA = BA:BI [21]
+011. BH:BA = BA:BI [21] & BA = BC [00] ⇒  BH:BC = BC:BI [22]
+012. DA ⟂ HA [11] & AG ⟂ AD [06] & B,C,A are collinear [01] & ∠IEB = ∠IAB [14] & G,E,I are collinear [09] & ∠GHB = ∠GEB [16] ⇒  ∠BHG = ∠(BC-IA) [23]
+013. DA ⟂ HA [11] & AG ⟂ AD [06] & B,C,A are collinear [01] & ∠AIB = ∠GAB [19] ⇒  ∠AIB = ∠(GH-BC) [24]
+014. ∠BHG = ∠(BC-IA) [23] & ∠AIB = ∠(GH-BC) [24] ⇒  ∠HBC = ∠CBI [25]
+015. BH:BC = BC:BI [22] & ∠HBC = ∠CBI [25] (Similar Triangles)⇒  ∠BHC = ∠BCI [26]
+016. B,E,H,G are concyclic [15] & FB = FC [04] & FG = FB [07] & FE = FB [05] ⇒  B,E,C,H are concyclic [27]
+017. B,E,C,H are concyclic [27] ⇒  ∠CBH = ∠CEH [28]
+018. ∠BHC = ∠BCI [26] & B,C,A are collinear [01] & ∠CBH = ∠CEH [28] ⇒  ∠HEC = ∠HCI [29]
+019. F is the circumcenter of \Delta CHE [12] & ∠HEC = ∠HCI [29] ⇒  CF ⟂ CI
+==========================

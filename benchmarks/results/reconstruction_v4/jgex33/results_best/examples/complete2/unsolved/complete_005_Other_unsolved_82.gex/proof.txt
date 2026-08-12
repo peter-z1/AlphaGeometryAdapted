@@ -1,0 +1,49 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G H : Points
+∠DCA = ∠BCD [00]
+∠BAD = ∠DAC [01]
+CE ⟂ AD [02]
+E,D,A are collinear [03]
+AD ⟂ FA [04]
+AF ⟂ GC [05]
+G,F,A are collinear [06]
+CH ⟂ BD [07]
+B,D,H are collinear [08]
+
+ * Auxiliary Constructions:
+I : Points
+DI = DA [09]
+CI = CA [10]
+
+ * Proof steps:
+001. DI = DA [09] ⇒  ∠DAI = ∠AID [11]
+002. ∠DAI = ∠AID [11] & AF ⟂ GC [05] & CE ⟂ AD [02] & AD ⟂ FA [04] ⇒  ∠(GC-IA) = ∠AID [12]
+003. CI = CA [10] & DI = DA [09] ⇒  AI ⟂ CD [13]
+004. CI = CA [10] & DI = DA [09] (SSS)⇒  ∠DCA = ∠ICD [14]
+005. CI = CA [10] & DI = DA [09] (SSS)⇒  ∠(AC-DI) = ∠(AD-CI) [15]
+006. CH ⟂ BD [07] & AI ⟂ CD [13] ⇒  ∠DCH = ∠(AI-BD) [16]
+007. E,D,A are collinear [03] & B,D,H are collinear [08] & CH ⟂ BD [07] & CE ⟂ AD [02] ⇒  ∠DEC = ∠DHC [17]
+008. ∠DEC = ∠DHC [17] ⇒  E,D,C,H are concyclic [18]
+009. E,D,C,H are concyclic [18] ⇒  ∠EDC = ∠EHC [19]
+010. ∠DCH = ∠(AI-BD) [16] & ∠EDC = ∠EHC [19] & E,D,A are collinear [03] & AF ⟂ GC [05] & CE ⟂ AD [02] & AD ⟂ FA [04] ⇒  ∠(GC-EH) = ∠(IA-BD) [20]
+011. ∠(GC-IA) = ∠AID [12] & ∠(GC-EH) = ∠(IA-BD) [20] ⇒  ∠AID = ∠(EH-BD) [21]
+012. ∠DCA = ∠BCD [00] & ∠DCA = ∠ICD [14] ⇒  ∠ICD = ∠BCD [22]
+013. ∠ICD = ∠BCD [22] ⇒  IC ∥ BC [23]
+014. CI ∥ BC [23] ⇒  B,I,C are collinear [24]
+015. ∠BAD = ∠DAC [01] & AF ⟂ GC [05] & CE ⟂ AD [02] & AD ⟂ FA [04] ⇒  ∠(BA-GC) = ∠GCA [25]
+016. ∠(AD-CI) = ∠(AC-DI) [15] & AF ⟂ GC [05] & CE ⟂ AD [02] & AD ⟂ FA [04] ⇒  ∠GCI = ∠(CA-DI) [26]
+017. ∠(BA-GC) = ∠GCA [25] & ∠GCI = ∠(CA-DI) [26] ⇒  ∠(AB-CG) = ∠CID [27]
+018. B,C,I are collinear [24] & ∠(AB-CG) = ∠CID [27] & AF ⟂ GC [05] & CE ⟂ AD [02] & AD ⟂ FA [04] & CI ∥ BC [23] ⇒  ∠BAD = ∠BID [28]
+019. ∠BAD = ∠BID [28] ⇒  B,D,I,A are concyclic [29]
+020. B,D,I,A are concyclic [29] ⇒  ∠ABD = ∠AID [30]
+021. E,D,A are collinear [03] & G,F,A are collinear [06] & CE ⟂ AD [02] & AF ⟂ GC [05] & AD ⟂ FA [04] ⇒  ∠ECG = ∠EAG [31]
+022. ∠ECG = ∠EAG [31] ⇒  E,G,C,A are concyclic [32]
+023. E,G,C,A are concyclic [32] ⇒  ∠EGC = ∠EAC [33]
+024. ∠EGC = ∠EAC [33] & E,D,A are collinear [03] & AF ⟂ GC [05] & CE ⟂ AD [02] & AD ⟂ FA [04] & ∠BAD = ∠DAC [01] ⇒  ∠(BA-GC) = ∠EGC [34]
+025. ∠(BA-GC) = ∠EGC [34] ⇒  BA ∥ EG [35]
+026. ∠AID = ∠(EH-BD) [21] & ∠ABD = ∠AID [30] & AB ∥ EG [35] ⇒  ∠(EG-BD) = ∠(EH-BD) [36]
+027. ∠(EG-BD) = ∠(EH-BD) [36] ⇒  EG ∥ EH [37]
+028. EG ∥ EH [37] ⇒  E,G,H are collinear
+==========================

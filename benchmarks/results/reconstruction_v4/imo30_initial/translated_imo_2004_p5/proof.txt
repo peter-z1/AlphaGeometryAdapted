@@ -1,0 +1,29 @@
+
+==========================
+ * From theorem premises:
+A B C D E F : Points
+DB = DC [00]
+DA = DB [01]
+DE = DA [02]
+∠FBC = ∠ABE [03]
+∠FEC = ∠AEB [04]
+
+ * Auxiliary Constructions:
+: Points
+
+
+ * Proof steps:
+001. DB = DC [00] & DA = DB [01] ⇒  DA = DC [05]
+002. DE = DA [02] & DA = DB [01] ⇒  DB = DE [06]
+003. DB = DE [06] ⇒  ∠DBE = ∠BED [07]
+004. DA = DB [01] ⇒  ∠DBA = ∠BAD [08]
+005. DB = DC [00] ⇒  ∠DBC = ∠BCD [09]
+006. DB = DC [00] & DA = DB [01] & DE = DA [02] ⇒  C,A,B,E are concyclic [10]
+007. C,A,B,E are concyclic [10] ⇒  ∠CBA = ∠CEA [11]
+008. DE = DA [02] ⇒  ∠DEA = ∠EAD [12]
+009. ∠FBC = ∠ABE [03] & ∠FEC = ∠AEB [04] & ∠CBA = ∠CEA [11] & ∠DBA = ∠BAD [08] & ∠DEA = ∠EAD [12] (Angle chase)⇒  ∠BFE = ∠BDE [13]
+010. ∠BFE = ∠BDE [13] ⇒  D,F,B,E are concyclic [14]
+011. D,F,B,E are concyclic [14] ⇒  ∠DFB = ∠DEB [15]
+012. ∠FBC = ∠ABE [03] & ∠DBE = ∠BED [07] & ∠DBA = ∠BAD [08] & ∠DBC = ∠BCD [09] & ∠DFB = ∠DEB [15] (Angle chase)⇒  ∠FDA = ∠CDF [16]
+013. DA = DC [05] & ∠FDA = ∠CDF [16] (SAS)⇒  FA = FC
+==========================

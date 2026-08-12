@@ -1,0 +1,28 @@
+
+==========================
+ * From theorem premises:
+A B C D E F : Points
+∠CBA = ∠ACB [00]
+B,D,A are collinear [01]
+EC = DB [02]
+C,E,A are collinear [03]
+D,F,E are collinear [04]
+B,F,C are collinear [05]
+
+ * Auxiliary Constructions:
+H : Points
+BH = BD [06]
+FH = FD [07]
+
+ * Proof steps:
+001. BH = BD [06] & FH = FD [07] (SSS)⇒  ∠BFH = ∠DFB [08]
+002. BH = BD [06] & FH = FD [07] (SSS)⇒  ∠HBF = ∠FBD [09]
+003. EC = DB [02] & BH = BD [06] ⇒  BH = EC [10]
+004. A,E,C are collinear [03] & B,C,F are collinear [05] & ∠HBF = ∠FBD [09] & B,D,A are collinear [01] & ∠CBA = ∠ACB [00] ⇒  ∠(CE-BF) = ∠HBF [11]
+005. ∠(CE-BF) = ∠HBF [11] ⇒  CE ∥ BH [12]
+006. A,E,C are collinear [03] & CE ∥ BH [12] ⇒  ∠BHC = ∠ECH [13]
+007. BH = EC [10] & ∠BHC = ∠ECH [13] (SAS)⇒  ∠HBC = ∠CEH [14]
+008. D,F,E are collinear [04] & ∠BFH = ∠DFB [08] & B,F,C are collinear [05] & ∠HBC = ∠CEH [14] & C,E,A are collinear [03] & CE ∥ BH [12] ⇒  ∠FEH = ∠EHF [15]
+009. ∠FEH = ∠EHF [15] ⇒  FE = FH [16]
+010. D,F,E are collinear [04] & FE = FH [16] & FH = FD [07] ⇒  F is midpoint of DE
+==========================

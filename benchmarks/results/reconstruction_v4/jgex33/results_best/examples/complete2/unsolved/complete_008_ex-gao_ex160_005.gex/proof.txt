@@ -1,0 +1,33 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G H : Points
+∠BAD = ∠DAC [00]
+A,B,E are collinear [01]
+FC = BE [02]
+A,F,C are collinear [03]
+E,F,G are collinear [04]
+GF = GE [05]
+H,B,C are collinear [06]
+HC = HB [07]
+
+ * Auxiliary Constructions:
+I : Points
+F,B,I are collinear [08]
+IF = IB [09]
+
+ * Proof steps:
+001. E,F,G are collinear [04] & GF = GE [05] ⇒  G is midpoint of FE [10]
+002. F,B,I are collinear [08] & IF = IB [09] ⇒  I is midpoint of BF [11]
+003. G is midpoint of FE [10] & I is midpoint of BF [11] ⇒  GI ∥ EB [12]
+004. BE ∥ IG [12] & F,B,I are collinear [08] & E,F,G are collinear [04] ⇒  FB:FI = BE:IG [13]
+005. H,B,C are collinear [06] & HC = HB [07] ⇒  H is midpoint of BC [14]
+006. H is midpoint of BC [14] & I is midpoint of BF [11] ⇒  HI ∥ CF [15]
+007. FC ∥ IH [15] & F,B,I are collinear [08] & H,B,C are collinear [06] ⇒  BF:BI = FC:IH [16]
+008. FB:FI = BE:IG [13] & IF = IB [09] & BF:BI = FC:IH [16] & FC = BE [02] ⇒  IH:FC = GI:FC [17]
+009. FC = EB [02] ⇒  FC:FB = FC:FB [18]
+010. IH:FC = GI:FC [17] & FC:FB = FC:FB [18] ⇒  IH = GI [19]
+011. IH = GI [19] ⇒  ∠IGH = ∠GHI [20]
+012. ∠IGH = ∠GHI [20] & GI ∥ EB [12] & A,B,E are collinear [01] & HI ∥ CF [15] & A,F,C are collinear [03] ⇒  ∠(AB-GH) = ∠(GH-AC) [21]
+013. ∠BAD = ∠DAC [00] & ∠(AB-GH) = ∠(GH-AC) [21] (Angle chase)⇒  AD ∥ GH
+==========================

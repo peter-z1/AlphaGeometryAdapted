@@ -17,17 +17,24 @@
 from __future__ import annotations
 
 import math
+import os
 from typing import Any, Optional, Union
 
 import geometry as gm
 import matplotlib
-from matplotlib import pyplot as plt
 import matplotlib.colors as mcolors
 import numpy as np
 from numpy.random import uniform as unif  # pylint: disable=g-importing-member
 
 
-matplotlib.use('TkAgg')
+try:
+    import tkinter  # pylint: disable=unused-import
+except ModuleNotFoundError:
+    matplotlib.use('Agg')
+else:
+    matplotlib.use('TkAgg' if os.environ.get('DISPLAY') or os.name == 'nt' else 'Agg')
+
+from matplotlib import pyplot as plt
 
 
 ATOM = 1e-12

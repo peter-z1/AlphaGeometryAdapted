@@ -1,0 +1,33 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G : Points
+∠CBD = ∠DBA [00]
+∠ECB = ∠ACE [01]
+F,C,E are collinear [02]
+AF ⟂ CE [03]
+D,B,G are collinear [04]
+AG ⟂ BD [05]
+
+ * Auxiliary Constructions:
+H I : Points
+BH = BA [06]
+GH = GA [07]
+A,I,F are collinear [08]
+H,I,B are collinear [09]
+
+ * Proof steps:
+001. F,C,E are collinear [02] & F,I,A are collinear [08] & AF ⟂ CE [03] ⇒  ∠AFC = ∠CFI [10]
+002. BH = BA [06] & GH = GA [07] (SSS)⇒  ∠ABG = ∠GBH [11]
+003. BH = BA [06] & GH = GA [07] ⇒  BG ⟂ AH [12]
+004. H,I,B are collinear [09] & ∠ABG = ∠GBH [11] & D,B,G are collinear [04] & ∠CBD = ∠DBA [00] ⇒  ∠CBD = ∠(HI-DB) [13]
+005. ∠CBD = ∠(HI-DB) [13] ⇒  CB ∥ HI [14]
+006. CB ∥ HI [14] & H,I,B are collinear [09] ⇒  BC ∥ BH [15]
+007. BC ∥ BH [15] ⇒  H,C,B are collinear [16]
+008. F,C,E are collinear [02] & H,C,B are collinear [16] & H,I,B are collinear [09] & ∠ACE = ∠ECB [01] ⇒  ∠ACF = ∠FCI [17]
+009. ∠AFC = ∠CFI [10] & ∠ACF = ∠FCI [17] (Similar Triangles)⇒  FA = FI [18]
+010. A,I,F are collinear [08] & FA = FI [18] ⇒  F is midpoint of AI [19]
+011. BG ⟂ AH [12] & AG ⟂ BD [05] & D,B,G are collinear [04] & GH = GA [07] ⇒  G is midpoint of HA [20]
+012. F is midpoint of AI [19] & G is midpoint of HA [20] ⇒  FG ∥ IH [21]
+013. FG ∥ IH [21] & H,C,B are collinear [16] & H,I,B are collinear [09] ⇒  FG ∥ BC
+==========================

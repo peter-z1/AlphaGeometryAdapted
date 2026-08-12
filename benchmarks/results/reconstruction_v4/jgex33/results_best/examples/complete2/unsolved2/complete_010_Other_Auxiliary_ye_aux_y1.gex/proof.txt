@@ -1,0 +1,24 @@
+
+==========================
+ * From theorem premises:
+A B C D E : Points
+BD ⟂ CD [00]
+AE ⟂ CE [01]
+∠BAE = ∠EAC [02]
+
+ * Auxiliary Constructions:
+F : Points
+CE ⟂ FA [03]
+F,E,C are collinear [04]
+
+ * Proof steps:
+001. CE ⟂ FA [03] & AE ⟂ CE [01] & F,E,C are collinear [04] ⇒  FE ⟂ FE [05]
+002. BD ⟂ CD [00] & FE ⟂ FE [05] ⇒  ∠(DB-FE) = ∠(DC-FE) [06]
+003. ∠(DB-FE) = ∠(DC-FE) [06] & CE ⟂ FA [03] & AE ⟂ CE [01] & F,E,C are collinear [04] ⇒  BD ∥ CD [07]
+004. BD ∥ CD [07] ⇒  D,B,C are collinear [08]
+005. CE ⟂ FA [03] & AE ⟂ CE [01] & F,E,C are collinear [04] & ∠BAE = ∠EAC [02] ⇒  ∠(AB-FE) = ∠FEF [09]
+006. ∠(AB-FE) = ∠FEF [09] ⇒  AB ∥ FE [10]
+007. CE ⟂ FA [03] & AE ⟂ CE [01] & F,E,C are collinear [04] & AB ∥ FE [10] ⇒  AB ∥ AF [11]
+008. AB ∥ AF [11] ⇒  F,A,B are collinear [12]
+009. D,B,C are collinear [08] & F,A,B are collinear [12] & CE ⟂ FA [03] & AE ⟂ CE [01] & F,E,C are collinear [04] ⇒  DE ∥ AB
+==========================

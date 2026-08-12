@@ -18,13 +18,14 @@
 Please refer to README.md for detailed instructions.
 """
 
+from __future__ import annotations
+
 import traceback
 
 import sys
 import logging
 import ddar
 import graph as gh
-import lm_inference as lm
 import pretty as pt
 import problem as pr
 import argparse
@@ -149,12 +150,71 @@ def write_solution(g: gh.Graph, p: pr.Problem, out_file: str) -> None:
         logging.info('Solution written to %s.', out_file)
 
 
-def get_lm(model_file: str, batch_size: int) -> lm.LanguageModelInference:
+def get_lm(
+    backend: str,
+    model_file: str,
+    model_revision: str,
+    checkpoint: str,
+    tokenizer: str,
+    adapter: str,
+    batch_size: int,
+    max_decode_len: int,
+    device: str,
+    dtype: str,
+    load_in_4bit: bool,
+    hf_cache_dir: str,
+):
+    """Construct one of the optional language-model inference backends."""
     global LM
-    if LM is None:
-        LM = lm.LanguageModelInference(
-            model_file=model_file, mode='beam_search', batch_size=batch_size
+    if LM is not None:
+        return LM
+
+    if backend == 'pytorch':
+        if not checkpoint or not tokenizer:
+            raise ValueError(
+                '--checkpoint and --tokenizer are required for '
+                '--backend=pytorch'
+            )
+        from pytorch_lm_inference import (  # pylint: disable=import-outside-toplevel
+            PytorchLanguageModelInference,
         )
+        LM = PytorchLanguageModelInference(
+            checkpoint=checkpoint,
+            tokenizer=tokenizer,
+            batch_size=batch_size,
+            max_decode_len=max_decode_len,
+            device=device,
+        )
+    elif backend == 'chatllm':
+        import lm_inference as chatllm_inference  # pylint: disable=import-outside-toplevel
+        LM = chatllm_inference.LanguageModelInference(
+            model_file=model_file,
+            mode='beam_search',
+            batch_size=batch_size,
+        )
+    elif backend == 'huggingface':
+        if not model_file or model_file.startswith(':'):
+            raise ValueError(
+                '--model must name a Hugging Face base model when '
+                '--backend=huggingface'
+            )
+        from huggingface_lm_inference import (  # pylint: disable=import-outside-toplevel
+            HuggingFaceLanguageModelInference,
+        )
+        LM = HuggingFaceLanguageModelInference(
+            model_name=model_file,
+            revision=model_revision,
+            adapter=adapter,
+            batch_size=batch_size,
+            max_decode_len=max_decode_len,
+            device=device,
+            dtype=dtype,
+            load_in_4bit=load_in_4bit,
+            cache_dir=hf_cache_dir,
+        )
+    else:
+        raise ValueError(f'Unknown language-model backend: {backend}')
+
     return LM
 
 def run_ddar(g: gh.Graph, p: pr.Problem, out_file: str) -> bool:
@@ -184,6 +244,32 @@ def run_ddar(g: gh.Graph, p: pr.Problem, out_file: str) -> bool:
         g.type2nodes[gh.Segment],
         save_to=(out_file + '.png' if out_file != '' else None))
     return True
+
+
+def build_problem_with_retries(
+    p: pr.Problem,
+    definitions: dict[str, pr.Definition],
+    max_attempts: int = 20,
+) -> tuple[gh.Graph, list[pr.Dependency]]:
+    """Build a numerical proof state without rejecting it on one bad sample.
+
+    Graph.build_problem currently calls exit() when a random realization puts
+    points too close together or too far apart. Complex problems encounter
+    these harmless sampling failures frequently. Retry with fresh randomness
+    before deciding that an LM-proposed construction is unusable.
+    """
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return gh.Graph.build_problem(p, definitions)
+        except SystemExit:
+            logging.warning(
+                'Numerical build failed on attempt %d/%d; resampling.',
+                attempt,
+                max_attempts,
+            )
+    raise RuntimeError(
+        f'Unable to build a valid numerical realization after {max_attempts} attempts'
+    )
 
 
 def translate_constrained_to_constructive(
@@ -446,7 +532,7 @@ class BeamQueue:
 
 
 def run_alphageometry(
-    model: lm.LanguageModelInference,
+    model: object,
     p: pr.Problem,
     search_depth: int,
     beam_size: int,
@@ -478,7 +564,7 @@ def run_alphageometry(
     # special tokens prompting the LM to generate auxiliary points.
     string += ' {F1} x00'
     # the graph to represent the proof state.
-    g, _ = gh.Graph.build_problem(p, DEFINITIONS)
+    g, _ = build_problem_with_retries(p, DEFINITIONS)
 
     # First we run the symbolic engine DD+AR:
     if run_ddar(g, p, out_file):
@@ -538,7 +624,15 @@ def run_alphageometry(
                 p_new = pr.Problem.from_txt(candidate_pstring)
 
                 # This is the new proof state graph representation:
-                g_new, _ = gh.Graph.build_problem(p_new, DEFINITIONS)
+                try:
+                    g_new, _ = build_problem_with_retries(
+                        p_new, DEFINITIONS, max_attempts=20)
+                except RuntimeError:
+                    logging.warning(
+                        'Skipping auxiliary candidate after repeated invalid '
+                        'numerical realizations: "%s"', candidate_pstring
+                    )
+                    continue
                 if run_ddar(g_new, p_new, out_file):
                     logging.info('Solved.')
                     return True
@@ -587,7 +681,66 @@ def parse_args():
         '--model',
         type=str,
         default=':alphageometry-lm',
-        help='model file name.')
+        help='ChatLLM model identifier or Hugging Face base-model name.')
+
+    parser.add_argument(
+        '--backend',
+        choices=('pytorch', 'chatllm', 'huggingface'),
+        default='pytorch',
+        help='language-model inference backend (default: pytorch).')
+
+    parser.add_argument(
+        '--checkpoint',
+        type=str,
+        default='',
+        help='PyTorch reconstruction checkpoint.')
+
+    parser.add_argument(
+        '--tokenizer',
+        type=str,
+        default='',
+        help='SentencePiece tokenizer used by the PyTorch checkpoint.')
+
+    parser.add_argument(
+        '--adapter',
+        type=str,
+        default='',
+        help='optional PEFT/LoRA adapter for the Hugging Face backend.')
+
+    parser.add_argument(
+        '--model_revision',
+        type=str,
+        default='',
+        help='optional Hugging Face model commit or tag.')
+
+    parser.add_argument(
+        '--dtype',
+        choices=('bfloat16', 'float16', 'float32'),
+        default='bfloat16',
+        help='floating-point type used by the Hugging Face backend.')
+
+    parser.add_argument(
+        '--load_in_4bit',
+        action='store_true',
+        help='load Hugging Face base weights in four-bit form.')
+
+    parser.add_argument(
+        '--hf_cache_dir',
+        type=str,
+        default='',
+        help='optional Hugging Face model/tokenizer cache directory.')
+
+    parser.add_argument(
+        '--device',
+        choices=('cpu', 'cuda'),
+        default='cuda',
+        help='inference device; Hugging Face CUDA mode requires a visible GPU.')
+
+    parser.add_argument(
+        '--max_decode_len',
+        type=int,
+        default=32,
+        help='maximum generated tokens per auxiliary construction.')
 
     parser.add_argument(
         '--defs_file',
@@ -662,7 +815,20 @@ def main(FLAGS):
         run_ddar(g, this_problem, FLAGS.out_file)
 
     elif FLAGS.mode == 'alphageometry':
-        model = get_lm(FLAGS.model, FLAGS.batch_size)
+        model = get_lm(
+            backend=FLAGS.backend,
+            model_file=FLAGS.model,
+            model_revision=FLAGS.model_revision,
+            checkpoint=FLAGS.checkpoint,
+            tokenizer=FLAGS.tokenizer,
+            adapter=FLAGS.adapter,
+            batch_size=FLAGS.batch_size,
+            max_decode_len=FLAGS.max_decode_len,
+            device=FLAGS.device,
+            dtype=FLAGS.dtype,
+            load_in_4bit=FLAGS.load_in_4bit,
+            hf_cache_dir=FLAGS.hf_cache_dir,
+        )
         run_alphageometry(
             model,
             this_problem,

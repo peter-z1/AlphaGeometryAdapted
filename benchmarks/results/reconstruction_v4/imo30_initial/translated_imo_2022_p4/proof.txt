@@ -1,0 +1,36 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G H I J : Points
+DC = AB [00]
+EB = ED [01]
+EA = EC [02]
+∠EAF = ∠FDE [03]
+A,F,G are collinear [04]
+C,B,G are collinear [05]
+A,F,H are collinear [06]
+E,B,H are collinear [07]
+F,D,I are collinear [08]
+C,I,B are collinear [09]
+F,J,D are collinear [10]
+C,E,J are collinear [11]
+
+ * Auxiliary Constructions:
+: Points
+
+
+ * Proof steps:
+001. DC = AB [00] & EB = ED [01] & EA = EC [02] (SSS)⇒  ∠DCE = ∠BAE [12]
+002. DC = AB [00] & EB = ED [01] & EA = EC [02] (SSS)⇒  ∠CDE = ∠ABE [13]
+003. DC = AB [00] & EB = ED [01] & EA = EC [02] (SSS)⇒  ∠CED = ∠AEB [14]
+004. F,J,D are collinear [10] & A,F,H are collinear [06] & ∠FDE = ∠EAF [03] ⇒  ∠JDE = ∠EAH [15]
+005. C,E,J are collinear [11] & E,B,H are collinear [07] & ∠CED = ∠AEB [14] ⇒  ∠JED = ∠AEH [16]
+006. ∠JDE = ∠EAH [15] & ∠JED = ∠AEH [16] (Similar Triangles)⇒  EJ:EH = ED:EA [17]
+007. EJ:EH = ED:EA [17] & EA = EC [02] & EB = ED [01] ⇒  EJ:EH = EB:EC [18]
+008. C,E,J are collinear [11] & E,B,H are collinear [07] ⇒  ∠JEH = ∠CEB [19]
+009. EJ:EH = EB:EC [18] & ∠JEH = ∠CEB [19] (Similar Triangles)⇒  ∠EJH = ∠CBE [20]
+010. ∠EJH = ∠CBE [20] & C,E,J are collinear [11] ⇒  ∠(CE-HJ) = ∠CBE [21]
+011. ∠EAF = ∠FDE [03] & ∠DCE = ∠BAE [12] & ∠CDE = ∠ABE [13] & ∠(CE-HJ) = ∠CBE [21] (Angle chase)⇒  ∠(DF-BC) = ∠(HJ-AF) [22]
+012. A,F,H are collinear [06] & A,F,G are collinear [04] & F,J,D are collinear [10] & F,D,I are collinear [08] & C,I,B are collinear [09] & C,B,G are collinear [05] & ∠(HJ-AF) = ∠(DF-BC) [22] ⇒  ∠JHG = ∠JIG [23]
+013. ∠JHG = ∠JIG [23] ⇒  I,J,H,G are concyclic
+==========================

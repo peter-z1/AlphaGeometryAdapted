@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from ctypes import *
 from enum import IntEnum
 import os, sys, signal, queue
@@ -8,7 +10,7 @@ from typing import Any, Iterable, List, Union
 try:
     import model_downloader
 except:
-    this_dir = os.path.dirname(os.path.abspath(sys.argv[0])) + '/chatllm/bindings'
+    this_dir = os.path.dirname(os.path.abspath(__file__))
     sys.path.append(os.path.join(this_dir, '..', 'scripts'))
     import model_downloader
 
@@ -28,6 +30,7 @@ class PrintType(IntEnum):
                                     # (space): None; D: Debug; I: Info; W: Warn; E: Error; .: continue
     PRINTLN_BEAM_SEARCH     =12,    # print a whole line: a result of beam search with a prefix of probability
                                     # (example: "0.8,....")
+    PRINTLN_MODEL_INFO      =13,    # print a whole line: model metadata in JSON format
 
     PRINT_EVT_ASYNC_COMPLETED  = 100,   # last async operation completed (utf8_str is null)
 
@@ -81,7 +84,10 @@ class LibChatLLM:
         self._chatllm_tool_input        = self._lib.chatllm_tool_input
         self._chatllm_tool_completion   = self._lib.chatllm_tool_completion
         self._chatllm_text_tokenize     = self._lib.chatllm_text_tokenize
-        self._chatllm_text_embedding    = self._lib.chatllm_text_embedding
+        try:
+            self._chatllm_text_embedding = self._lib.chatllm_text_embedding
+        except AttributeError:
+            self._chatllm_text_embedding = self._lib.chatllm_embedding
         self._chatllm_qa_rank           = self._lib.chatllm_qa_rank
         self._chatllm_rag_select_store  = self._lib.chatllm_rag_select_store
         self._chatllm_abort_generation  = self._lib.chatllm_abort_generation
@@ -159,7 +165,10 @@ class LibChatLLM:
             obj.callback_async_done()
             return
 
-        txt = s.decode()
+        # Native callbacks can split a multibyte UTF-8 sequence between chunks.
+        # Beam outputs for AlphaGeometry are ASCII, so replacement is safer than
+        # allowing a display/logging byte to abort and silently drop a candidate.
+        txt = s.decode('utf-8', errors='replace')
         if print_type == PrintType.PRINT_CHAT_CHUNK.value:
             obj.callback_print(txt)
         elif print_type == PrintType.PRINTLN_META.value:
@@ -186,6 +195,8 @@ class LibChatLLM:
             obj.callback_print_log(txt)
         elif print_type == PrintType.PRINTLN_BEAM_SEARCH.value:
             obj.callback_print_beam_search(txt)
+        elif print_type == PrintType.PRINTLN_MODEL_INFO.value:
+            obj.callback_print_meta(txt)
         elif print_type == PrintType.PRINT_EVT_ASYNC_COMPLETED.value:
             obj.callback_async_done()
         else:

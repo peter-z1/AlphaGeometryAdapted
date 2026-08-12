@@ -1,0 +1,18 @@
+
+==========================
+ * From theorem premises:
+A B C D : Points
+DC ∥ AB [00]
+DA = BC [01]
+
+ * Auxiliary Constructions:
+E : Points
+A,D,E are collinear [02]
+B,C,E are collinear [03]
+
+ * Proof steps:
+001. CD ∥ AB [00] & A,D,E are collinear [02] & B,C,E are collinear [03] ⇒  AD:BC = AE:BE [04]
+002. AD:BC = AE:BE [04] & DA = BC [01] ⇒  AE = BE [05]
+003. AE = BE [05] ⇒  ∠EAB = ∠ABE [06]
+004. ∠EAB = ∠ABE [06] & A,D,E are collinear [02] & B,C,E are collinear [03] ⇒  ∠DAB = ∠ABC
+==========================

@@ -1,0 +1,24 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G : Points
+B,C,D are collinear [00]
+AD ⟂ BC [01]
+B,C,F are collinear [02]
+BC ⟂ FE [03]
+E,A,G are collinear [04]
+GE = GA [05]
+
+ * Auxiliary Constructions:
+H : Points
+H,F,D are collinear [06]
+HF = HD [07]
+
+ * Proof steps:
+001. H,D,F are collinear [06] & HF = HD [07] ⇒  H is midpoint of DF [08]
+002. BC ⟂ FE [03] & AD ⟂ BC [01] ⇒  FE ∥ AD [09]
+003. GE = GA [05] & HF = HD [07] ⇒  GE:GA = HF:HD [10]
+004. EF ∥ AD [09] & E,A,G are collinear [04] & H,F,D are collinear [06] & GE:GA = HF:HD [10] ⇒  GH ∥ EF [11]
+005. B,C,F are collinear [02] & B,C,D are collinear [00] & AD ⟂ BC [01] & EF ∥ AD [09] & GH ∥ EF [11] ⇒  GH ⟂ DF [12]
+006. H is midpoint of DF [08] & GH ⟂ DF [12] ⇒  GD = GF
+==========================

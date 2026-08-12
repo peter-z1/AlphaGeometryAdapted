@@ -1,0 +1,57 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G H I J K L : Points
+DA = BC [00]
+B,C,E are collinear [01]
+FD = EB [02]
+D,A,F are collinear [03]
+B,D,G are collinear [04]
+A,C,G are collinear [05]
+B,D,H are collinear [06]
+F,H,E are collinear [07]
+F,I,E are collinear [08]
+A,C,I are collinear [09]
+JG = JD [10]
+JA = JG [11]
+KB = KG [12]
+KG = KC [13]
+KL = KG [14]
+JL = JG [15]
+
+ * Auxiliary Constructions:
+: Points
+
+
+ * Proof steps:
+001. KB = KG [12] & KL = KG [14] & KG = KC [13] ⇒  B,L,C,G are concyclic [16]
+002. B,L,C,G are concyclic [16] ⇒  ∠BLC = ∠BGC [17]
+003. B,L,C,G are concyclic [16] ⇒  ∠BCL = ∠BGL [18]
+004. B,L,C,G are concyclic [16] ⇒  ∠BLG = ∠BCG [19]
+005. JG = JD [10] & JL = JG [15] & JA = JG [11] ⇒  D,A,L,G are concyclic [20]
+006. D,A,L,G are concyclic [20] ⇒  ∠DLA = ∠DGA [21]
+007. D,A,L,G are concyclic [20] ⇒  ∠DAL = ∠DGL [22]
+008. D,A,L,G are concyclic [20] ⇒  ∠DAG = ∠DLG [23]
+009. ∠BLC = ∠BGC [17] & B,D,G are collinear [04] & A,C,G are collinear [05] & ∠DLA = ∠DGA [21] ⇒  ∠DLA = ∠BLC [24]
+010. ∠BCL = ∠BGL [18] & B,D,G are collinear [04] & ∠DAL = ∠DGL [22] ⇒  ∠LAD = ∠LCB [25]
+011. ∠DLA = ∠BLC [24] & ∠LAD = ∠LCB [25] (Similar Triangles)⇒  AD:CB = AL:CL [26]
+012. ∠DLA = ∠BLC [24] & ∠LAD = ∠LCB [25] (Similar Triangles)⇒  DA:BC = DL:BL [27]
+013. DA:BC = DL:BL [27] & DA = BC [00] ⇒  DL = BL [28]
+014. ∠DAG = ∠DLG [23] & A,C,G are collinear [05] ⇒  ∠DAC = ∠DLG [29]
+015. ∠BLG = ∠BCG [19] & A,C,G are collinear [05] ⇒  ∠BLG = ∠BCA [30]
+016. ∠DAC = ∠DLG [29] & ∠BLG = ∠BCA [30] ⇒  ∠ADL = ∠CBL [31]
+017. D,A,F are collinear [03] & B,C,E are collinear [01] & ∠ADL = ∠CBL [31] ⇒  ∠FDL = ∠EBL [32]
+018. FD = EB [02] & DL = BL [28] & ∠FDL = ∠EBL [32] (SAS)⇒  LE = LF [33]
+019. FD = EB [02] & DL = BL [28] & ∠FDL = ∠EBL [32] (SAS)⇒  ∠ELF = ∠BLD [34]
+020. AD:CB = AL:CL [26] & DA = BC [00] & LE = LF [33] ⇒  LC:LA = LE:LF [35]
+021. B,D,H are collinear [06] & ∠DLA = ∠DGA [21] & B,D,G are collinear [04] & A,C,G are collinear [05] ⇒  ∠LAC = ∠(DL-BH) [36]
+022. B,D,H are collinear [06] & ∠BLC = ∠BGC [17] & B,D,G are collinear [04] & A,C,G are collinear [05] ⇒  ∠ACL = ∠HBL [37]
+023. ∠LAC = ∠(DL-BH) [36] & ∠ACL = ∠HBL [37] ⇒  ∠CLA = ∠BLD [38]
+024. ∠ELF = ∠BLD [34] & ∠CLA = ∠BLD [38] ⇒  ∠CLA = ∠ELF [39]
+025. LC:LA = LE:LF [35] & ∠CLA = ∠ELF [39] (Similar Triangles)⇒  ∠CAL = ∠EFL [40]
+026. F,I,E are collinear [08] & A,C,I are collinear [09] & ∠EFL = ∠CAL [40] ⇒  ∠IFL = ∠IAL [41]
+027. ∠IFL = ∠IAL [41] ⇒  A,L,F,I are concyclic [42]
+028. A,L,F,I are concyclic [42] ⇒  ∠ALI = ∠AFI [43]
+029. B,D,H are collinear [06] & B,D,G are collinear [04] & F,I,E are collinear [08] & F,H,E are collinear [07] & ∠ALI = ∠AFI [43] & D,A,F are collinear [03] & ∠DAL = ∠DGL [22] ⇒  ∠HGL = ∠HIL [44]
+030. ∠HGL = ∠HIL [44] ⇒  L,H,I,G are concyclic
+==========================

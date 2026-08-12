@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use the educational reconstruction, cite this software and the original AlphaGeometry paper."
+title: "AlphaGeometry Educational Reconstruction"
+type: software
+authors:
+  - family-names: Zenz
+    given-names: Peter
+repository-code: "https://github.com/peter-z1/AlphaGeometryAdapted"
+license: Apache-2.0
+version: "4"
+date-released: 2026-08-09
+references:
+  - type: article
+    title: "Solving Olympiad Geometry without Human Demonstrations"
+    authors:
+      - family-names: Trinh
+        given-names: Trieu H.
+      - family-names: Wu
+        given-names: Yuhuai
+      - family-names: Le
+        given-names: Quoc V.
+      - family-names: He
+        given-names: He
+      - family-names: Luong
+        given-names: Thang
+    journal: Nature
+    year: 2024
+    doi: 10.1038/s41586-023-06747-5

@@ -1,0 +1,57 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G H I J K L M : Points
+DB = DC [00]
+DA = DB [01]
+C,B,E are collinear [02]
+C,B,F are collinear [03]
+AF = AE [04]
+AG = AE [05]
+DG = DA [06]
+AH = AE [07]
+DH = DA [08]
+IB = IE [09]
+IG = IB [10]
+JH = JC [11]
+JC = JF [12]
+IK = IB [13]
+K,A,B are collinear [14]
+JL = JC [15]
+C,A,L are collinear [16]
+M,G,K are collinear [17]
+M,L,H are collinear [18]
+
+ * Auxiliary Constructions:
+: Points
+
+
+ * Proof steps:
+001. AH = AE [07] & AG = AE [05] ⇒  AG = AH [19]
+002. JH = JC [11] & JL = JC [15] & JC = JF [12] ⇒  C,L,F,H are concyclic [20]
+003. C,L,F,H are concyclic [20] ⇒  ∠CLH = ∠CFH [21]
+004. B,C,F are collinear [03] & M,L,H are collinear [18] & ∠CLH = ∠CFH [21] & C,A,L are collinear [16] ⇒  ∠ACF = ∠(ML-FH) [22]
+005. AF = AE [04] & AH = AE [07] & AG = AE [05] ⇒  G,H,F,E are concyclic [23]
+006. G,H,F,E are concyclic [23] ⇒  ∠GHF = ∠GEF [24]
+007. B,C,F are collinear [03] & ∠GHF = ∠GEF [24] & C,B,E are collinear [02] ⇒  ∠(GE-CF) = ∠GHF [25]
+008. ∠ACF = ∠(ML-FH) [22] & ∠(GE-CF) = ∠GHF [25] ⇒  ∠(CA-GE) = ∠(ML-GH) [26]
+009. IB = IE [09] & IK = IB [13] & IG = IB [10] ⇒  G,K,B,E are concyclic [27]
+010. G,K,B,E are concyclic [27] ⇒  ∠GKE = ∠GBE [28]
+011. G,K,B,E are concyclic [27] ⇒  ∠GBK = ∠GEK [29]
+012. DG = DA [06] & DH = DA [08] & DB = DC [00] & DA = DB [01] ⇒  G,C,A,H are concyclic [30]
+013. G,C,A,H are concyclic [30] & DB = DC [00] & DA = DB [01] & DG = DA [06] ⇒  G,C,B,H are concyclic [31]
+014. G,C,A,H are concyclic [30] & DB = DC [00] & DA = DB [01] & DG = DA [06] ⇒  G,B,H,A are concyclic [32]
+015. G,C,B,H are concyclic [31] ⇒  ∠GBC = ∠GHC [33]
+016. M,G,K are collinear [17] & ∠GKE = ∠GBE [28] & C,B,E are collinear [02] & ∠GBC = ∠GHC [33] ⇒  ∠GHC = ∠(MG-KE) [34]
+017. G,B,H,A are concyclic [32] ⇒  ∠ABG = ∠AHG [35]
+018. AG = AH [19] ⇒  ∠HGA = ∠AHG [36]
+019. G,C,H,A are concyclic [30] ⇒  ∠HGA = ∠HCA [37]
+020. ∠GBK = ∠GEK [29] & K,A,B are collinear [14] & ∠ABG = ∠AHG [35] & ∠HGA = ∠AHG [36] & ∠HGA = ∠HCA [37] ⇒  ∠HCA = ∠KEG [38]
+021. ∠GHC = ∠(MG-KE) [34] & ∠HCA = ∠KEG [38] ⇒  ∠(GH-CA) = ∠MGE [39]
+022. G,K,M are collinear [17] & M,L,H are collinear [18] & ∠(CA-GE) = ∠(ML-GH) [26] & ∠(GH-CA) = ∠MGE [39] ⇒  ∠MGH = ∠GHM [40]
+023. ∠MGH = ∠GHM [40] ⇒  MG = MH [41]
+024. AG = AH [19] & MG = MH [41] ⇒  GH ⟂ AM [42]
+025. DH = DA [08] & DG = DA [06] ⇒  DG = DH [43]
+026. DG = DH [43] & AG = AH [19] ⇒  GH ⟂ AD [44]
+027. GH ⟂ AM [42] & GH ⟂ AD [44] ⇒  M,A,D are collinear
+==========================

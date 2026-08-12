@@ -1,0 +1,40 @@
+{
+  "release": "reconstruction-v4-committed-teaching-data",
+  "files": [
+    {
+      "path": "auxiliary_v4/train.txt",
+      "bytes": 3243873,
+      "sha256": "76dd6d22cc125f31d0992b4220842d1de18943f884f6db43e7b1126840510914"
+    },
+    {
+      "path": "auxiliary_v4/val.txt",
+      "bytes": 180573,
+      "sha256": "285c3bc5871aaf5a0fa801aee8bde4e8bff75ed2391b5676f8fad5e569162ca0"
+    },
+    {
+      "path": "auxiliary_v4/test.txt",
+      "bytes": 155256,
+      "sha256": "3aa47a594eb2b37c56a25902dd57e5f68031f951e4638d2b3edea4bf40b5bbf3"
+    },
+    {
+      "path": "auxiliary_v4/train.jsonl.gz",
+      "bytes": 1401788,
+      "sha256": "cddbd2b8eeed6142b5e43133c42b856e59cd9839b7ac3b09f591925b40ee05e4"
+    },
+    {
+      "path": "auxiliary_v4/val.jsonl.gz",
+      "bytes": 79182,
+      "sha256": "6dbd986ad70ba1ab473651a4ec2ecca71d86882ec2c1d45297aa5d23fbe68a5d"
+    },
+    {
+      "path": "auxiliary_v4/test.jsonl.gz",
+      "bytes": 69564,
+      "sha256": "221310a3d66efdc895d8d7b680e924c85c2e262d08c4f88627bf01186fd15292"
+    },
+    {
+      "path": "pretraining_sample/train.txt",
+      "bytes": 1538642,
+      "sha256": "83f44f1e433ac727a0ea88ee24a2b42d0fa263cc3604412a85e5b1886b783afd"
+    }
+  ]
+}

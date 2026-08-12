@@ -1,0 +1,19 @@
+{
+  "backend": "pytorch",
+  "beam_size": 32,
+  "complete": true,
+  "elapsed_seconds": 15.294,
+  "formalization": "a b = segment a b; c = on_tline c a a b; d = on_tline d b b a; e = on_circle e c a, on_circle e d b; f = on_circle f c a, on_circle f d b; g = on_pline g e a b, on_circle g c a; h = on_pline h e a b, on_circle h d b; i = on_line i a g, on_line i b h; j = on_line j a f, on_line j g h; k = on_line k b f, on_line k g h ? cong i j i k",
+  "lm_decode_calls": 0,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 0,
+  "problem_name": "translated_imo_2000_p1",
+  "proof": "benchmarks/results/reconstruction_v4/imo30_initial/translated_imo_2000_p1/proof.txt",
+  "search_depth": 6,
+  "solved": true,
+  "solver_stage": "ddar",
+  "status": "solved",
+  "timeout_seconds": 900
+}

@@ -1,0 +1,18 @@
+{
+  "backend": "pytorch",
+  "beam_size": 32,
+  "complete": true,
+  "elapsed_seconds": 598.667,
+  "formalization": "a b c = triangle a b c; d = on_pline d b c a, on_pline d a c b; e = on_line e a b; f = shift f b a e ? para c e f d",
+  "lm_decode_calls": 98,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 222,
+  "problem_name": "examples/complete2/unsolved1/complete_010_Other_gao_Y_yL182-1.gex",
+  "proof": null,
+  "search_depth": 6,
+  "solved": false,
+  "status": "unsolved",
+  "timeout_seconds": 900
+}

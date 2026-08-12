@@ -1,0 +1,19 @@
+{
+  "backend": "pytorch",
+  "beam_size": 128,
+  "complete": true,
+  "elapsed_seconds": 2650.674,
+  "formalization": "a b c = triangle a b c; d = circle d a b c; e = on_tline e a d a; f = mirror f e a; g = mirror g f c; h = mirror h e b; i = on_line i g e, on_line i h f; j = circle j i g h ? cong j f j e",
+  "lm_decode_calls": 63,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 12,
+  "problem_name": "translated_imo_2009_p2",
+  "proof": "benchmarks/results/reconstruction_v4/imo30_large_search/translated_imo_2009_p2/proof.txt",
+  "search_depth": 12,
+  "solved": true,
+  "solver_stage": "lm_auxiliary_then_ddar",
+  "status": "solved",
+  "timeout_seconds": 3600
+}

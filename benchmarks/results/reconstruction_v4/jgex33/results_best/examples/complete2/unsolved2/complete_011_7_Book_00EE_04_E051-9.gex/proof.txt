@@ -1,0 +1,33 @@
+
+==========================
+ * From theorem premises:
+A B C D E : Points
+∠CAB = 1_PI/6 [00]
+D,B,C are collinear [01]
+CB = CD [02]
+DE ⟂ AB [03]
+A,B,E are collinear [04]
+
+ * Auxiliary Constructions:
+F : Points
+AF = AC [05]
+EF = EC [06]
+
+ * Proof steps:
+001. AF = AC [05] ⇒  ∠FCA = ∠AFC [07]
+002. ∠CAB = 1_PI/6 [00] & DE ⟂ AB [03] (Angle chase)⇒  ∠(AC-DE) = 2_PI/3 [08]
+003. AF = AC [05] & EF = EC [06] ⇒  AE ⟂ CF [09]
+004. AE ⟂ CF [09] & DE ⟂ AB [03] & A,B,E are collinear [04] ⇒  CF ∥ DE [10]
+005. ∠CAB = 1_PI/6 [00] & DE ⟂ AB [03] & ∠ACF = ∠CFA [07] & CF ∥ DE [10] (Angle chase)⇒  ∠CAF = 1_PI/3 [11]
+006. ∠FCA = ∠AFC [07] & ∠(AC-DE) = 2_PI/3 [08] & CF ∥ DE [10] & ∠CAF = 1_PI/3 [11] ⇒  ∠CAF = ∠AFC [12]
+007. ∠CAF = ∠AFC [12] ⇒  CA = CF [13]
+008. A,B,E are collinear [04] & AB ⟂ DE [03] ⇒  BE ⟂ ED [14]
+009. D,B,C are collinear [01] & CB = CD [02] ⇒  C is midpoint of BD [15]
+010. BE ⟂ ED [14] & C is midpoint of BD [15] ⇒  DC = EC [16]
+011. DC = EC [16] ⇒  ∠CDE = ∠DEC [17]
+012. EF = EC [06] ⇒  ∠EFC = ∠FCE [18]
+013. B,D,C are collinear [01] & ∠CDE = ∠DEC [17] & CF ∥ DE [10] & ∠EFC = ∠FCE [18] ⇒  ∠EFC = ∠CDE [19]
+014. CF ∥ DE [10] ⇒  ∠ECF = ∠CED [20]
+015. ∠EFC = ∠CDE [19] & ∠ECF = ∠CED [20] (Similar Triangles)⇒  FE:DC = FC:DE [21]
+016. CA = CF [13] & FE:DC = FC:DE [21] & DC = EC [16] & EF = EC [06] ⇒  DE = AC
+==========================

@@ -1,0 +1,20 @@
+{
+  "backend": "pytorch",
+  "beam_size": 32,
+  "complete": true,
+  "elapsed_seconds": 900.002,
+  "error": "exceeded 900 seconds",
+  "formalization": "a b c = triangle a b c; d = midpoint d b c; e = eqdistance e c b a, on_pline e a c b; f = midpoint f a e ? perp e a d f",
+  "lm_decode_calls": 45,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 207,
+  "problem_name": "examples/complete2/unsolved1/complete_006_7_Book_LLL_L091-13.gex",
+  "proof": null,
+  "search_depth": 6,
+  "solved": null,
+  "solver_stage": "lm_auxiliary_search",
+  "status": "timeout",
+  "timeout_seconds": 900
+}

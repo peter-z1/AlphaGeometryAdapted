@@ -1,0 +1,3 @@
+# Optional build helpers for the legacy AlphaGeometryRE/ChatLLM backend.
+cmake
+patchelf

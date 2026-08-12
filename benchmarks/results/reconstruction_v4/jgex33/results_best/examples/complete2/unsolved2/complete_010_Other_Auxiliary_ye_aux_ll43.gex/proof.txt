@@ -1,0 +1,37 @@
+
+==========================
+ * From theorem premises:
+A B C D E F : Points
+AC ⟂ BC [00]
+CA = CB [01]
+∠BAC = ∠CBA [02]
+A,C,D are collinear [03]
+DA = DC [04]
+E,D,B are collinear [05]
+CE ⟂ BD [06]
+A,F,B are collinear [07]
+E,C,F are collinear [08]
+
+ * Auxiliary Constructions:
+G : Points
+AG = AD [09]
+FG = FD [10]
+
+ * Proof steps:
+001. AG = AD [09] & FG = FD [10] (SSS)⇒  ∠AGF = ∠FDA [11]
+002. AG = AD [09] & FG = FD [10] (SSS)⇒  ∠GAF = ∠FAD [12]
+003. B,E,D are collinear [05] & CE ⟂ BD [06] ⇒  ∠DEC = ∠CEB [13]
+004. B,E,D are collinear [05] & CE ⟂ BD [06] ⇒  EC ⟂ ED [14]
+005. EC ⟂ ED [14] & AC ⟂ BC [00] ⇒  ∠ECA = ∠(ED-CB) [15]
+006. EC ⟂ ED [14] & AC ⟂ BC [00] ⇒  ∠ECB = ∠(ED-AC) [16]
+007. A,C,D are collinear [03] & E,D,B are collinear [05] & ∠ECA = ∠(ED-CB) [15] ⇒  ∠DCE = ∠CBE [17]
+008. ∠DEC = ∠CEB [13] & ∠DCE = ∠CBE [17] (Similar Triangles)⇒  DE:CE = DC:CB [18]
+009. DE:CE = DC:CB [18] & AG = AD [09] & DA = DC [04] & AC = CB [01] ⇒  AG:AC = ED:EC [19]
+010. A,B,F are collinear [07] & ∠BAC = ∠CBA [02] & ∠GAF = ∠FAD [12] & A,C,D are collinear [03] ⇒  ∠GAF = ∠(CB-AF) [20]
+011. ∠GAF = ∠(CB-AF) [20] ⇒  AG ∥ CB [21]
+012. B,E,D are collinear [05] & ∠ECB = ∠(ED-AC) [16] & BC ∥ AG [21] ⇒  ∠GAC = ∠CED [22]
+013. AG:AC = ED:EC [19] & ∠GAC = ∠CED [22] (Similar Triangles)⇒  ∠GCA = ∠ECD [23]
+014. ∠GCA = ∠ECD [23] & A,C,D are collinear [03] ⇒  CG ∥ CE [24]
+015. CG ∥ CE [24] ⇒  E,C,G are collinear [25]
+016. A,C,D are collinear [03] & ∠AGF = ∠FDA [11] & E,C,G are collinear [25] & E,C,F are collinear [08] & AG ∥ BC [21] & CG ∥ CE [24] & ∠ECB = ∠(ED-AC) [16] & E,D,B are collinear [05] ⇒  ∠CDB = ∠FDA
+==========================

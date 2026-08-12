@@ -1,0 +1,36 @@
+{
+  "dataset": "auxiliary_combined_v4",
+  "initialization": "reconstruction_v4_pretrain",
+  "resume_weights_only": true,
+  "model": {
+    "block_size": 512,
+    "d_model": 1024,
+    "n_layers": 12,
+    "n_heads": 8,
+    "d_ff": 4096,
+    "dropout": 0.1,
+    "vocab_size": 368,
+    "num_parameters": 152057856
+  },
+  "training": {
+    "max_steps": 2000,
+    "batch_size": 4,
+    "grad_accum_steps": 8,
+    "learning_rate": 0.00003,
+    "warmup_steps": 100,
+    "weight_decay": 0.1,
+    "clip_grad_norm": 1.0,
+    "seed": 17,
+    "amp": true
+  },
+  "examples": {
+    "train": 14284,
+    "validation": 790,
+    "test": 677
+  },
+  "selection": {
+    "variant": 2,
+    "validation_loss": 0.4571874572336674,
+    "validation_perplexity": 1.579624968623845
+  }
+}

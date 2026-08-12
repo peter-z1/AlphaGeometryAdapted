@@ -1,0 +1,30 @@
+
+==========================
+ * From theorem premises:
+A B C D E F : Points
+∠ACD = ∠DCB [00]
+∠ABD = ∠DBC [01]
+AE ⟂ BD [02]
+D,B,E are collinear [03]
+D,F,C are collinear [04]
+AF ⟂ CD [05]
+
+ * Auxiliary Constructions:
+G : Points
+G,B,C are collinear [06]
+A,G,D are collinear [07]
+
+ * Proof steps:
+001. B,D,E are collinear [03] & D,F,C are collinear [04] & AF ⟂ CD [05] & AE ⟂ BD [02] ⇒  ∠AED = ∠AFD [08]
+002. ∠AED = ∠AFD [08] ⇒  A,D,F,E are concyclic [09]
+003. A,D,F,E are concyclic [09] ⇒  ∠ADF = ∠AEF [10]
+004. ∠ADF = ∠AEF [10] & D,F,C are collinear [04] ⇒  ∠ADC = ∠AEF [11]
+005. G,B,C are collinear [06] & ∠ABD = ∠DBC [01] ⇒  ∠ABD = ∠DBG [12]
+006. ∠ABD = ∠DBG [12] & A,G,D are collinear [07] ⇒  AD:AB = GD:GB [13]
+007. G,B,C are collinear [06] & ∠ACD = ∠DCB [00] ⇒  ∠ACD = ∠DCG [14]
+008. ∠ACD = ∠DCG [14] & A,G,D are collinear [07] ⇒  AD:AC = GD:GC [15]
+009. AD:AB = GD:GB [13] & AD:AC = GD:GC [15] ⇒  AB:AC = GB:GC [16]
+010. AB:AC = GB:GC [16] & G,B,C are collinear [06] ⇒  ∠BAG = ∠GAC [17]
+011. ∠BAG = ∠GAC [17] & A,G,D are collinear [07] ⇒  ∠BAD = ∠DAC [18]
+012. ∠ACD = ∠DCB [00] & ∠ABD = ∠DBC [01] & AE ⟂ BD [02] & ∠ADC = ∠AEF [11] & ∠BAD = ∠DAC [18] (Angle chase)⇒  BC ∥ EF
+==========================

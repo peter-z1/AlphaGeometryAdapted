@@ -1,0 +1,57 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G H : Points
+CA = CB [00]
+C,A,B are collinear [01]
+CD = CA [02]
+CE = CA [03]
+ED = EA [04]
+∠FCD = ∠CDF [05]
+∠CFD = ∠CFD [06]
+CF = CA [07]
+FC = FD [08]
+∠GCD = ∠CDG [09]
+∠CGD = ∠CGD [10]
+CG = CA [11]
+GC = GD [12]
+D,H,B are collinear [13]
+HC ∥ DE [14]
+
+ * Auxiliary Constructions:
+: Points
+
+
+ * Proof steps:
+001. ∠GCD = ∠CDG [09] & ∠CGD = ∠CGD [10] (Similar Triangles)⇒  CD:CG = DC:DG [15]
+002. CD = CA [02] & CG = CA [11] ⇒  CG = CD [16]
+003. CD:CG = DC:DG [15] & CG = CD [16] ⇒  DC = DG [17]
+004. ∠FCD = ∠CDF [05] & ∠CFD = ∠CFD [06] (Similar Triangles)⇒  CD:CF = DC:DF [18]
+005. CD:CF = DC:DF [18] & CF = CA [07] & CD = CA [02] ⇒  DC = DF [19]
+006. CD = CA [02] & CE = CA [03] ⇒  CE = CD [20]
+007. CE = CD [20] (SSS)⇒  ∠CED = ∠EDC [21]
+008. CD = CA [02] & ED = EA [04] ⇒  AD ⟂ CE [22]
+009. CD = CA [02] & CA = CB [00] ⇒  C is the circumcenter of \Delta ADB [23]
+010. C is the circumcenter of \Delta ADB [23] & C,A,B are collinear [01] ⇒  AD ⟂ BD [24]
+011. D,H,B are collinear [13] & ∠CED = ∠EDC [21] & AD ⟂ CE [22] & AD ⟂ BD [24] & DE ∥ CH [14] ⇒  ∠DCH = ∠CHD [25]
+012. ∠DCH = ∠CHD [25] ⇒  DC = DH [26]
+013. DC = DG [17] & DC = DF [19] & DC = DH [26] ⇒  F,C,G,H are concyclic [27]
+014. F,C,G,H are concyclic [27] ⇒  ∠GFH = ∠GCH [28]
+015. CF = CA [07] & CG = CA [11] & GC = GD [12] ⇒  GD = CF [29]
+016. CG = CD [16] & GD = CF [29] & DC = DF [19] (SSS)⇒  CG ∥ DF [30]
+017. CE = CA [03] & CG = CA [11] & CD = CA [02] & CA = CB [00] & CF = CA [07] ⇒  G,E,D,F are concyclic [31]
+018. G,E,D,F are concyclic [31] ⇒  ∠GEF = ∠GDF [32]
+019. CG = CD [16] & GC = GD [12] & DC = DG [17] (SSS)⇒  ∠CGD = ∠DCG [33]
+020. ∠GEF = ∠GDF [32] & ∠CGD = ∠DCG [33] & CG ∥ DF [30] ⇒  ∠FDC = ∠GEF [34]
+021. CE = CA [03] & CF = CA [07] & CD = CA [02] & CA = CB [00] ⇒  E,B,D,F are concyclic [35]
+022. E,B,D,F are concyclic [35] ⇒  ∠EDB = ∠EFB [36]
+023. ∠EDB = ∠EFB [36] & ∠CED = ∠EDC [21] & AD ⟂ CE [22] & AD ⟂ BD [24] ⇒  ∠CDE = ∠EFB [37]
+024. ∠FDC = ∠GEF [34] & ∠CDE = ∠EFB [37] ⇒  ∠FDE = ∠(EG-BF) [38]
+025. D,H,B are collinear [13] & DE ∥ CH [14] & AD ⟂ CE [22] & AD ⟂ BD [24] ⇒  ∠ECH = ∠HDE [39]
+026. CH ∥ DE [14] ⇒  ∠EHC = ∠HED [40]
+027. ∠ECH = ∠HDE [39] & ∠EHC = ∠HED [40] (Similar Triangles)⇒  EC = HD [41]
+028. FC = FD [08] & CF = CA [07] & CG = CA [11] ⇒  CG = DF [42]
+029. D,H,B are collinear [13] & AD ⟂ CE [22] & AD ⟂ BD [24] & DF ∥ CG [30] ⇒  ∠ECG = ∠HDF [43]
+030. EC = HD [41] & CG = DF [42] & ∠ECG = ∠HDF [43] (SAS)⇒  ∠CEG = ∠DHF [44]
+031. ∠GFH = ∠GCH [28] & CG ∥ DF [30] & CH ∥ DE [14] & ∠EDF = ∠(BF-EG) [38] & ∠CEG = ∠DHF [44] & D,H,B are collinear [13] & AD ⟂ CE [22] & AD ⟂ BD [24] ⇒  ∠BFH = ∠HFG
+==========================

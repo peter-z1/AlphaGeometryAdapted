@@ -1,0 +1,45 @@
+
+==========================
+ * From theorem premises:
+A B C D E F : Points
+A,D,B are collinear [00]
+DA = DB [01]
+EB = AC [02]
+EC ∥ BA [03]
+C,E,F are collinear [04]
+FC = FE [05]
+
+ * Auxiliary Constructions:
+G H I : Points
+EG = EB [06]
+G,E,B are collinear [07]
+H,A,E are collinear [08]
+HE = HA [09]
+I,A,G are collinear [10]
+IG = IA [11]
+
+ * Proof steps:
+001. C,E,F are collinear [04] & FC = FE [05] ⇒  F is midpoint of EC [12]
+002. H,A,E are collinear [08] & HE = HA [09] ⇒  H is midpoint of AE [13]
+003. F is midpoint of EC [12] & H is midpoint of AE [13] ⇒  FH ∥ CA [14]
+004. FH ∥ AC [14] & H,A,E are collinear [08] & C,E,F are collinear [04] ⇒  EH:EA = HF:AC [15]
+005. A,D,B are collinear [00] & DA = DB [01] ⇒  D is midpoint of AB [16]
+006. D is midpoint of AB [16] & H is midpoint of AE [13] ⇒  DH ∥ BE [17]
+007. DH ∥ BE [17] & H,A,E are collinear [08] & A,D,B are collinear [00] ⇒  AE:AH = EB:HD [18]
+008. EH:EA = HF:AC [15] & HE = HA [09] & EG = EB [06] & EB = AC [02] & AE:AH = EB:HD [18] ⇒  HD:CA = HF:CA [19]
+009. EG = EB [06] & EB = AC [02] ⇒  CA:GB = CA:GB [20]
+010. HD:CA = HF:CA [19] & CA:GB = CA:GB [20] ⇒  HD = HF [21]
+011. G,E,B are collinear [07] & EG = EB [06] ⇒  E is midpoint of BG [22]
+012. I,A,G are collinear [10] & IG = IA [11] ⇒  I is midpoint of AG [23]
+013. E is midpoint of BG [22] & I is midpoint of AG [23] ⇒  EI ∥ BA [24]
+014. A,D,B are collinear [00] & EI ∥ AB [24] ⇒  EI ∥ AD [25]
+015. D is midpoint of AB [16] & E is midpoint of BG [22] ⇒  DE ∥ AG [26]
+016. I,A,G are collinear [10] & DE ∥ AG [26] ⇒  ED ∥ AI [27]
+017. H is midpoint of AE [13] & EI ∥ AD [25] & ED ∥ AI [27] ⇒  HI = HD [28]
+018. H is midpoint of AE [13] & EI ∥ AD [25] & ED ∥ AI [27] ⇒  H,D,I are collinear [29]
+019. HD = HF [21] & HI = HD [28] ⇒  H is the circumcenter of \Delta DFI [30]
+020. H is the circumcenter of \Delta DFI [30] & H,D,I are collinear [29] ⇒  DF ⟂ FI [31]
+021. CE ∥ AB [03] & EI ∥ AB [24] ⇒  EI ∥ EC [32]
+022. EI ∥ EC [32] ⇒  I,C,E are collinear [33]
+023. DF ⟂ FI [31] & I,C,E are collinear [33] & C,E,F are collinear [04] ⇒  DF ⟂ CE
+==========================

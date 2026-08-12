@@ -1,0 +1,17 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G : Points
+D,A,B are collinear [00]
+D,E,C are collinear [01]
+C,F,A are collinear [02]
+G,E,A are collinear [03]
+
+ * Auxiliary Constructions:
+H : Points
+D,C,H are collinear [04]
+H,A,B are collinear [05]
+
+ * Proof steps:
+001. C,F,A are collinear [02] & D,C,H are collinear [04] & D,A,B are collinear [00] & H,A,B are collinear [05] & G,E,A are collinear [03] & D,E,C are collinear [01] ⇒  ∠FDC = ∠CDG
+==========================

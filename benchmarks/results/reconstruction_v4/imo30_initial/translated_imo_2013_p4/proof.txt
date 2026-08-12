@@ -1,0 +1,67 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G H I J K : Points
+BD ⟂ AC [00]
+AD ⟂ BC [01]
+C,A,E are collinear [02]
+D,E,B are collinear [03]
+C,D,F are collinear [04]
+A,F,B are collinear [05]
+C,G,B are collinear [06]
+HF = HG [07]
+HB = HF [08]
+IE = IG [09]
+IC = IE [10]
+HJ = HG [11]
+G,H,J are collinear [12]
+IK = IG [13]
+G,I,K are collinear [14]
+
+ * Auxiliary Constructions:
+: Points
+
+
+ * Proof steps:
+001. HF = HG [07] & HJ = HG [11] ⇒  H is the circumcenter of \Delta JFG [15]
+002. H is the circumcenter of \Delta JFG [15] & G,H,J are collinear [12] ⇒  FJ ⟂ FG [16]
+003. IE = IG [09] & IK = IG [13] ⇒  I is the circumcenter of \Delta GEK [17]
+004. I is the circumcenter of \Delta GEK [17] & G,I,K are collinear [14] ⇒  EG ⟂ EK [18]
+005. C,A,E are collinear [02] & D,E,B are collinear [03] & BD ⟂ AC [00] & EG ⟂ EK [18] ⇒  ∠GEK = ∠AED [19]
+006. C,B,G are collinear [06] & BC ⟂ AD [01] ⇒  CG ⟂ DA [20]
+007. D,E,B are collinear [03] & AC ⟂ BD [00] ⇒  CA ⟂ DE [21]
+008. CG ⟂ DA [20] & CA ⟂ DE [21] ⇒  ∠GCA = ∠ADE [22]
+009. CG ⟂ DA [20] & CA ⟂ DE [21] ⇒  ∠(CG-DE) = ∠DAC [23]
+010. IE = IG [09] & IK = IG [13] & IC = IE [10] ⇒  C,K,E,G are concyclic [24]
+011. C,K,E,G are concyclic [24] ⇒  ∠CEK = ∠CGK [25]
+012. G,I,K are collinear [14] & D,E,B are collinear [03] & ∠GCA = ∠ADE [22] & C,G,B are collinear [06] & ∠CEK = ∠CGK [25] & C,A,E are collinear [02] ⇒  ∠GKE = ∠ADE [26]
+013. ∠GEK = ∠AED [19] & ∠GKE = ∠ADE [26] (Similar Triangles)⇒  GE:AE = KE:DE [27]
+014. CA ⟂ DE [21] & EG ⟂ EK [18] ⇒  ∠(CA-GE) = ∠DEK [28]
+015. CA ⟂ DE [21] & EG ⟂ EK [18] ⇒  ∠(CA-KE) = ∠DEG [29]
+016. D,E,B are collinear [03] & C,A,E are collinear [02] & ∠(CA-GE) = ∠DEK [28] ⇒  ∠KED = ∠GEA [30]
+017. GE:AE = KE:DE [27] & ∠KED = ∠GEA [30] (Similar Triangles)⇒  ∠KDE = ∠GAE [31]
+018. GE:AE = KE:DE [27] & ∠KED = ∠GEA [30] (Similar Triangles)⇒  ∠KEG = ∠(DK-AG) [32]
+019. ∠KDE = ∠GAE [31] & D,E,B are collinear [03] & C,A,E are collinear [02] & ∠(CA-KE) = ∠DEG [29] & ∠KEG = ∠(DK-AG) [32] ⇒  DK ⟂ GA [33]
+020. FJ ⟂ FG [16] & DK ⟂ GA [33] ⇒  ∠JFG = ∠(DK-AG) [34]
+021. C,A,E are collinear [02] & D,E,B are collinear [03] & BD ⟂ AC [00] ⇒  ∠CEB = ∠DEA [35]
+022. C,A,E are collinear [02] & D,E,B are collinear [03] & BD ⟂ AC [00] ⇒  ∠AEB = ∠DEC [36]
+023. C,A,E are collinear [02] & D,E,B are collinear [03] & ∠(CG-DE) = ∠DAC [23] & C,G,B are collinear [06] ⇒  ∠DAE = ∠CBE [37]
+024. ∠CEB = ∠DEA [35] & ∠DAE = ∠CBE [37] (Similar Triangles)⇒  DE:CE = AE:EB [38]
+025. DE:CE = AE:EB [38] & ∠AEB = ∠DEC [36] (Similar Triangles)⇒  ∠ABE = ∠DCE [39]
+026. DE:CE = AE:EB [38] & ∠AEB = ∠DEC [36] (Similar Triangles)⇒  ∠EAB = ∠EDC [40]
+027. CA ⟂ DE [21] & FJ ⟂ FG [16] ⇒  ∠(CA-JF) = ∠(DE-GF) [41]
+028. C,D,F are collinear [04] & A,F,B are collinear [05] & ∠ABE = ∠DCE [39] & D,E,B are collinear [03] & C,A,E are collinear [02] & ∠(CA-JF) = ∠(DE-GF) [41] ⇒  ∠JFG = ∠DFA [42]
+029. HF = HG [07] & HJ = HG [11] & HB = HF [08] ⇒  G,F,J,B are concyclic [43]
+030. HF = HG [07] & HJ = HG [11] & HB = HF [08] ⇒  H is the circumcenter of \Delta JBG [44]
+031. G,F,J,B are concyclic [43] ⇒  ∠GFB = ∠GJB [45]
+032. H is the circumcenter of \Delta JBG [44] & G,H,J are collinear [12] ⇒  BG ⟂ JB [46]
+033. G,H,J are collinear [12] & A,F,B are collinear [05] & ∠GFB = ∠GJB [45] & BG ⟂ JB [46] & AD ⟂ BC [01] & C,G,B are collinear [06] ⇒  ∠JGF = ∠DAF [47]
+034. ∠JFG = ∠DFA [42] & ∠JGF = ∠DAF [47] (Similar Triangles)⇒  JF:DF = GF:AF [48]
+035. A,F,B are collinear [05] & ∠ABE = ∠DCE [39] & D,E,B are collinear [03] & C,A,E are collinear [02] & ∠EAB = ∠EDC [40] ⇒  AF ⟂ CD [49]
+036. FJ ⟂ FG [16] & AF ⟂ CD [49] ⇒  ∠(JF-CD) = ∠GFA [50]
+037. A,F,B are collinear [05] & C,D,F are collinear [04] & ∠(JF-CD) = ∠GFA [50] ⇒  ∠GFA = ∠JFD [51]
+038. JF:DF = GF:AF [48] & ∠GFA = ∠JFD [51] (Similar Triangles)⇒  ∠JFG = ∠(DJ-AG) [52]
+039. ∠JFG = ∠(DK-AG) [34] & ∠JFG = ∠(DJ-AG) [52] ⇒  ∠(JD-GA) = ∠(DK-GA) [53]
+040. ∠(JD-GA) = ∠(DK-GA) [53] ⇒  JD ∥ DK [54]
+041. DJ ∥ DK [54] ⇒  J,D,K are collinear
+==========================

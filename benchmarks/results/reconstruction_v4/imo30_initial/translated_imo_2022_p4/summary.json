@@ -1,0 +1,19 @@
+{
+  "backend": "pytorch",
+  "beam_size": 32,
+  "complete": true,
+  "elapsed_seconds": 3.488,
+  "formalization": "a b = segment; c = free; d = eqdistance c a b; e = on_bline a c, on_bline b d; f = eqangle2 a e d; g = on_line f a, on_line b c; h = on_line f a, on_line b e; i = on_line f d, on_line b c; j = on_line f d, on_line c e ? cyclic g h i j",
+  "lm_decode_calls": 0,
+  "model": "models/finetuned/checkpoint_latest.pt",
+  "model_batch_size": 32,
+  "numeric_goal_true": true,
+  "problem_index": 29,
+  "problem_name": "translated_imo_2022_p4",
+  "proof": "benchmarks/results/reconstruction_v4/imo30_initial/translated_imo_2022_p4/proof.txt",
+  "search_depth": 6,
+  "solved": true,
+  "solver_stage": "ddar",
+  "status": "solved",
+  "timeout_seconds": 900
+}

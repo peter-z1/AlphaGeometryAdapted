@@ -1,0 +1,30 @@
+
+==========================
+ * From theorem premises:
+A B C D E F G H : Points
+B,C,D are collinear [00]
+∠(AD-BC) = ∠(AD-BC) [01]
+E,A,D are collinear [02]
+E,F,B are collinear [03]
+E,C,G are collinear [04]
+G,B,H are collinear [05]
+F,C,H are collinear [06]
+
+ * Auxiliary Constructions:
+J : Points
+F,H,J are collinear [07]
+G,B,J are collinear [08]
+
+ * Proof steps:
+001. E,A,D are collinear [02] & F,H,J are collinear [07] & G,B,J are collinear [08] & G,B,H are collinear [05] & F,C,H are collinear [06] & E,F,B are collinear [03] & B,C,D are collinear [00] & ∠(AD-BC) = ∠(AD-BC) [01] ⇒  ∠AEH = ∠ADH [09]
+002. ∠AEH = ∠ADH [09] ⇒  E,A,D,H are concyclic [10]
+003. E,A,D are collinear [02] & F,H,J are collinear [07] & G,B,J are collinear [08] & G,B,H are collinear [05] & F,C,H are collinear [06] & E,C,G are collinear [04] & C,B,D are collinear [00] & ∠(AD-BC) = ∠(AD-BC) [01] ⇒  ∠AEC = ∠ADC [11]
+004. ∠AEC = ∠ADC [11] ⇒  E,C,A,D are concyclic [12]
+005. E,A,D are collinear [02] & F,H,J are collinear [07] & G,B,J are collinear [08] & G,B,H are collinear [05] & F,C,H are collinear [06] & E,F,B are collinear [03] & B,C,D are collinear [00] & ∠(AD-BC) = ∠(AD-BC) [01] ⇒  ∠AEF = ∠ADF [13]
+006. ∠AEF = ∠ADF [13] ⇒  E,F,A,D are concyclic [14]
+007. E,A,D are collinear [02] & F,H,J are collinear [07] & G,B,J are collinear [08] & G,B,H are collinear [05] & F,C,H are collinear [06] & E,C,G are collinear [04] & B,C,D are collinear [00] & ∠(AD-BC) = ∠(AD-BC) [01] ⇒  ∠AEG = ∠ADG [15]
+008. ∠AEG = ∠ADG [15] ⇒  E,G,A,D are concyclic [16]
+009. E,A,D,H are concyclic [10] & E,C,A,D are concyclic [12] & E,A,D,F are concyclic [14] & E,G,A,D are concyclic [16] ⇒  D,G,F,H are concyclic [17]
+010. F,H,J are collinear [07] & G,B,J are collinear [08] & G,B,H are collinear [05] & F,C,H are collinear [06] & B,C,D are collinear [00] ⇒  ∠GDH = ∠FDH [18]
+011. D,G,F,H are concyclic [17] & ∠GDH = ∠FDH [18] ⇒  GH = FH
+==========================
