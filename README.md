@@ -182,12 +182,6 @@ not architecture- or data-identical to DeepMind's Meliad model, which used a
 1024-token context and far larger private corpora. Detailed comparison and
 hashes are in [PROVENANCE.md](PROVENANCE.md).
 
-## Publishing the large artifacts
-
-Do not commit `.pt` or `.bin` model files to ordinary Git history. Publish the
-versioned bundle separately (for example as a GitHub Release or archival
-dataset), attach `release/manifest-v4.json`, and document its permanent URL.
-The `.gitignore` already excludes local artifact and output directories.
 
 ## License
 
