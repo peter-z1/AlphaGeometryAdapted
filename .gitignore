@@ -15,8 +15,12 @@ external/meliad/
 external/google_deepmind_alphageometry/
 artifacts/
 scripts/slurm_*.sh
-# Local compatibility wrappers retained only while already-submitted jobs run.
-scripts/run_geometry_corpus_v2_pilot.sh
+# Lightweight, reproducible eqangle/eqratio production and evaluation jobs.
+!scripts/slurm_generate_eq_goals_v1.sh
+!scripts/slurm_finalize_eq_goals_v1.sh
+!scripts/slurm_finetune_qwen_eq_goals_v1.sh
+!scripts/slurm_finetune_selftrained_eq_goals_v1.sh
+!scripts/slurm_benchmark_eq_models_v1.sh
 scripts/finalize_geometry_corpus_v2_fast_production.sh
 benchmarks/**/slurm_*.sh
 # Local course assessment material. Keep it on disk, but never publish it with
@@ -31,8 +35,9 @@ benchmarks/**/slurm_*.sh
 # Standalone implementation specification retained locally for future work.
 /IMPLEMENTATION_SPEC.md
 
-# Local Qwen experiments and checkpoints are not part of the educational repo.
-/experiments/
+# Keep the portable Qwen3.5 experiment, but ignore any other local experiments.
+/experiments/*
+!/experiments/qwen3_5_9b/
 slurm-*.out
 slurm-*.err
 *.exe

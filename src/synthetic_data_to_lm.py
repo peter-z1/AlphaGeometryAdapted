@@ -32,6 +32,11 @@ def normalize_basic(
     name: str, args: list[str]
 ) -> tuple[str, list[str]]:
     """Match Problem.setup_str_from_problem's basic-predicate normalization."""
+    if name == 'rconst':
+        a, b, c, d, num, den = args
+        num, den = pr.simplify(int(num), int(den))
+        args = [a, b, c, d, f'{num}/{den}']
+
     if name in ['s_angle', 'aconst']:
         x, y, z, v = args
         name = 'aconst'
@@ -101,7 +106,13 @@ def clauses_to_lm_segments(
                     group[p] = points
 
                 for basic in basics:
-                    basic_args = [mapping[a] for a in basic.args]
+                    # Definition basics may contain integer literals.  In
+                    # particular, triangle12 emits ``rconst ... 1 2``; those
+                    # ratio terms are values, not formal point variables.
+                    basic_args = [
+                        arg if pr.isint(arg) else mapping[arg]
+                        for arg in basic.args
+                    ]
                     name, basic_args = normalize_basic(basic.name, basic_args)
                     p2deps[points].append(pr.hashed_txt(name, basic_args))
 
@@ -145,7 +156,7 @@ def problem_to_prompt(
 
 
 def parse_clause_list(txt: str) -> list[pr.Clause]:
-    return [pr.Clause.from_txt(c.strip()) for c in txt.split('; ') if c.strip()]
+    return [pr.Clause.from_txt(c.strip()) for c in txt.split(';') if c.strip()]
 
 
 def auxiliary_to_target(
@@ -165,6 +176,169 @@ def auxiliary_to_target(
         'target_predicates': sum(predicate_counts),
     }
     return target, metrics
+
+
+def validate_target_for_current_inference(
+    target: str,
+    visible_problem: str,
+) -> tuple[bool, str]:
+    """Statically validate the one-new-point action interface used in search.
+
+    The LM serializer can represent multi-point groups and predicates that the
+    current AlphaGeometry search adapter cannot turn back into constructive
+    clauses.  Training on such strings creates unreachable labels.  This
+    check mirrors the adapter's lexical/arity translation without performing
+    another numerical graph build.
+    """
+    visible = pr.Problem.from_txt(visible_problem, translate=False)
+    existing = {point for clause in visible.clauses for point in clause.points}
+    segments = [segment.strip() for segment in target.split(';') if segment.strip()]
+    if not segments:
+        return False, 'empty_target'
+
+    for segment in segments:
+        clause_txt, reason = constrained_segment_to_constructive(
+            segment, existing
+        )
+        if clause_txt is None:
+            return False, reason
+        clause = pr.Clause.from_txt(clause_txt)
+        existing.update(clause.points)
+    return True, ''
+
+
+def parse_target_segment(segment: str) -> tuple[list[str], list[list[str]]]:
+    """Parse one LM action segment without interpreting reference numbers."""
+    parts = segment.strip().removesuffix(';').strip().split(' : ')
+    if len(parts) != 2:
+        raise ValueError('invalid_segment')
+    head, premise_text = parts
+    point_names = head.split()
+
+    predicates: list[list[str]] = [[]]
+    for token in premise_text.split():
+        if token.isdigit():
+            if predicates[-1]:
+                predicates.append([])
+        else:
+            predicates[-1].append(token)
+    predicates = [predicate for predicate in predicates if predicate]
+    return point_names, predicates
+
+
+def format_target_segment(
+    point_names: list[str],
+    predicates: list[list[str]],
+    start_ref: int,
+) -> tuple[str, int]:
+    """Format a parsed action with fresh monotonically increasing references."""
+    formatted = []
+    ref = start_ref
+    for predicate in predicates:
+        formatted.append(' '.join(predicate) + f' {ref:02}')
+        ref += 1
+    return ' '.join(point_names) + ' : ' + ' '.join(formatted), ref
+
+
+def dependency_order_segments(
+    segments: list[tuple[str, int, list[str]]],
+    existing: set[str],
+) -> list[tuple[str, int, list[str]]]:
+    """Topologically order one-point groups when their clauses permit it.
+
+    Some named multi-output constructions list dependent feet before their
+    center.  The constrained groups themselves contain enough information to
+    put the center first.  Genuinely coupled multi-point heads are deliberately
+    not decomposed here.
+    """
+    pending = list(segments)
+    ordered: list[tuple[str, int, list[str]]] = []
+    known = set(existing)
+    while pending:
+        selected = None
+        for index, (segment, _count, _families) in enumerate(pending):
+            point_names, predicates = parse_target_segment(segment)
+            if len(point_names) != 1:
+                continue
+            point = point_names[0]
+            dependencies = {
+                arg
+                for predicate in predicates
+                for arg in predicate[1:]
+                if arg != point
+            }
+            if dependencies <= known:
+                selected = index
+                break
+        if selected is None:
+            # Preserve the original remainder so validation reports the first
+            # unsupported/cyclic group and later groups are never emitted.
+            ordered.extend(pending)
+            break
+        item = pending.pop(selected)
+        ordered.append(item)
+        point_names, _predicates = parse_target_segment(item[0])
+        known.update(point_names)
+    return ordered
+
+
+def constrained_segment_to_constructive(
+    segment: str,
+    existing: set[str],
+) -> tuple[str | None, str]:
+    """Translate one executable constrained action to a constructive clause."""
+    import alphageometry  # pylint: disable=import-outside-toplevel
+
+    try:
+        point_names, predicates = parse_target_segment(segment)
+    except ValueError as exc:
+        return None, str(exc)
+    if len(point_names) != 1 or len(point_names[0]) != 1:
+        return None, 'multi_point_head'
+    point = point_names[0]
+    if point in existing:
+        return None, 'reused_point'
+    if not predicates or len(predicates) > 2:
+        return None, 'predicate_count'
+
+    translated = []
+    repeated_output_aline = False
+    for predicate in predicates:
+        name, *args = predicate
+        try:
+            mapped = pt.map_symbol(name)
+        except Exception:  # pylint: disable=broad-exception-caught
+            return None, 'unknown_predicate'
+        if point not in args:
+            return None, 'output_not_in_predicate'
+        if not alphageometry.check_valid_args(mapped, args):
+            return None, 'invalid_predicate'
+        if any(arg != point and arg not in existing for arg in args):
+            return None, 'hidden_prerequisite'
+        try:
+            construction, construction_args_ = (
+                alphageometry.translate_constrained_to_constructive(
+                    point, mapped, args
+                )
+            )
+        except Exception:  # pylint: disable=broad-exception-caught
+            return None, 'translation_error'
+        if construction == 'on_aline' and construction_args_.count(point) > 1:
+            repeated_output_aline = True
+            continue
+        translated.append(construction + ' ' + ' '.join(construction_args_))
+
+    if repeated_output_aline and not any(
+        construction.startswith('on_bline ') for construction in translated
+    ):
+        return None, 'repeated_output_in_on_aline'
+
+    clause_txt = point + ' = ' + ', '.join(translated)
+    try:
+        pr.Clause.from_txt(clause_txt)
+    except Exception:  # pylint: disable=broad-exception-caught
+        return None, 'constructive_parse_error'
+    return clause_txt, ''
 
 
 def convert_row(
@@ -191,8 +365,139 @@ def convert_row(
         'full_problem': row.get('full_problem'),
         'full_setup': row.get('full_setup'),
         'goal': row.get('goal'),
+        'source_constructions': sorted({
+            construction.name
+            for clause in parse_clause_list(target_auxiliary)
+            for construction in clause.constructions
+        }),
     }
     return pair, metrics
+
+
+def problem_txt(problem: pr.Problem) -> str:
+    if problem.goal is None:
+        raise ValueError('problem has no goal')
+    return (
+        '; '.join(clause.txt() for clause in problem.clauses)
+        + ' ? '
+        + problem.goal.txt()
+    )
+
+
+def convert_row_to_action_pairs(
+    row: dict[str, object],
+    definitions: dict[str, pr.Definition],
+    feature_token: str = DEFAULT_FEATURE_TOKEN,
+) -> list[tuple[dict[str, object], dict[str, int]]]:
+    """Split a rabbit into sequential one-point autoregressive actions.
+
+    The constrained serializer sometimes exposes a multi-output named
+    construction as several independent one-point groups.  Centroids and
+    nine-point configurations are examples: their midpoint-like points can be
+    introduced one at a time, and later groups only mention earlier outputs.
+    Such groups are safe to train as successive inference actions even though
+    they originated in one constructive clause.  A genuinely coupled group
+    with a multi-point head (for example, both trisection points at once)
+    remains unsupported and is left for validation to reject.
+    """
+    visible = pr.Problem.from_txt(str(row['visible_problem']), translate=False)
+    if visible.goal is None:
+        raise ValueError('visible_problem must include a goal')
+    clauses = parse_clause_list(str(row['target_auxiliary']))
+    if not clauses:
+        raise ValueError('target_auxiliary contains no clauses')
+
+    prompt, first_action_ref = problem_to_prompt(
+        visible, definitions, feature_token
+    )
+    serialized: list[tuple[str, int, list[str]]] = []
+    ordering_existing = {
+        point for clause in visible.clauses for point in clause.points
+    }
+    for clause in clauses:
+        segments, _next_ref, predicate_counts = clauses_to_lm_segments(
+            [clause], definitions, start_ref=0
+        )
+        source_constructions = sorted({
+            construction.name for construction in clause.constructions
+        })
+        clause_segments = list(zip(
+            segments,
+            predicate_counts,
+            [source_constructions] * len(segments),
+        ))
+        serialized.extend(
+            dependency_order_segments(clause_segments, ordering_existing)
+        )
+        ordering_existing.update(clause.points)
+
+    # Reordering changes the presentation order, so assign references only
+    # after the dependency order is final.
+    next_ref = first_action_ref
+    renumbered = []
+    for segment, predicate_count, source_constructions in serialized:
+        point_names, predicates = parse_target_segment(segment)
+        segment, next_ref = format_target_segment(
+            point_names, predicates, next_ref
+        )
+        renumbered.append((segment, predicate_count, source_constructions))
+    serialized = renumbered
+
+    pairs: list[tuple[dict[str, object], dict[str, int]]] = []
+    current_clauses = list(visible.clauses)
+    existing = {point for clause in current_clauses for point in clause.points}
+    current_prompt = prompt
+    action_count = len(serialized)
+    for action_index, (segment, predicate_count, source_constructions) in enumerate(
+        serialized
+    ):
+        current = pr.Problem(url='', clauses=list(current_clauses), goal=visible.goal)
+        target = segment + ' ;'
+        point_names, _ = parse_target_segment(segment)
+        metrics = {
+            'target_clauses': 1,
+            'target_groups': 1,
+            'target_points': len(point_names),
+            'target_predicates': predicate_count,
+        }
+        current_visible = problem_txt(current)
+        constructive_clause, _reason = constrained_segment_to_constructive(
+            segment, existing
+        )
+        pair = {
+            'id': f'{row.get("id")}-action-{action_index}',
+            'source_id': row.get('id'),
+            'seed': row.get('seed'),
+            'diagram_id': row.get('diagram_id'),
+            'action_index': action_index,
+            'action_count': action_count,
+            'prompt': current_prompt,
+            'target': target,
+            'text': current_prompt + ' ' + target,
+            'visible_problem': current_visible,
+            'target_auxiliary': (
+                constructive_clause
+                if constructive_clause is not None
+                else str(row['target_auxiliary'])
+            ),
+            'source_target_auxiliary': row.get('target_auxiliary'),
+            'source_constructions': source_constructions,
+            'full_problem': row.get('full_problem'),
+            'full_setup': row.get('full_setup'),
+            'goal': row.get('goal'),
+        }
+        pairs.append((pair, metrics))
+        if constructive_clause is None:
+            # Later groups cannot be reached if this action cannot be applied.
+            break
+        clause = pr.Clause.from_txt(constructive_clause)
+        current_clauses.append(clause)
+        existing.update(clause.points)
+        # This is exactly how run_alphageometry extends the LM context after a
+        # successful action; rebuilding from generic inverse constructions can
+        # otherwise introduce redundant basic predicates.
+        current_prompt += ' ' + target + ' x00'
+    return pairs
 
 
 def within_limits(
@@ -226,6 +531,18 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         default=2,
         help='Skip targets with more constrained predicates. Use -1 for no limit.',
     )
+    parser.add_argument(
+        '--split_actions',
+        action='store_true',
+        help='Write one autoregressive row per sequential one-point group, '
+             'including groups from a multi-output constructive clause.',
+    )
+    parser.add_argument(
+        '--stats_out',
+        type=Path,
+        help='Optional JSON report of acceptance and rejection by source '
+             'construction family.',
+    )
     return parser.parse_args(argv)
 
 
@@ -236,10 +553,41 @@ def main(argv: list[str]) -> int:
     stats = {
         'read': 0,
         'written': 0,
+        'actions_seen': 0,
+        'actions_rejected': 0,
+        'actions_discarded_with_row': 0,
+        'rows_complete': 0,
+        'rows_partial': 0,
+        'rows_rejected': 0,
+        'unreachable_actions': 0,
         'multi_target': 0,
         'too_many_predicates': 0,
         'errors': 0,
     }
+    family_stats: dict[str, dict[str, object]] = defaultdict(
+        lambda: {
+            'seen': 0,
+            'written': 0,
+            'rejected': 0,
+            'rejection_reasons': defaultdict(int),
+        }
+    )
+
+    def pair_families(pair: dict[str, object]) -> list[str]:
+        families = pair.get('source_constructions', [])
+        if not isinstance(families, list) or not families:
+            return ['unknown']
+        return [str(family) for family in families]
+
+    def record(pair: dict[str, object], outcome: str, reason: str = '') -> None:
+        for family in pair_families(pair):
+            family_stats[family][outcome] = int(
+                family_stats[family][outcome]
+            ) + 1
+            if reason:
+                reasons = family_stats[family]['rejection_reasons']
+                assert isinstance(reasons, defaultdict)
+                reasons[reason] += 1
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with args.input.open('r', encoding='utf-8') as src, args.out.open(
@@ -251,24 +599,87 @@ def main(argv: list[str]) -> int:
             stats['read'] += 1
             try:
                 row = json.loads(line)
-                pair, metrics = convert_row(row, definitions, args.feature_token)
-                ok, reason = within_limits(
-                    metrics, args.allow_multi_target, args.max_target_predicates
+                converted = (
+                    convert_row_to_action_pairs(row, definitions, args.feature_token)
+                    if args.split_actions
+                    else [convert_row(row, definitions, args.feature_token)]
                 )
-                if not ok:
-                    stats[reason] += 1
-                    continue
             except Exception as exc:  # pylint: disable=broad-exception-caught
                 stats['errors'] += 1
                 print(f'warning: skipped row {stats["read"]}: {exc}', file=sys.stderr)
                 continue
 
-            dst.write(json.dumps(pair, sort_keys=True) + '\n')
-            stats['written'] += 1
+            row_pairs: list[dict[str, object]] = []
+            rejected_reason = ''
+            for pair, metrics in converted:
+                stats['actions_seen'] += 1
+                record(pair, 'seen')
+                ok, reason = within_limits(
+                    metrics, args.allow_multi_target, args.max_target_predicates
+                )
+                if not ok:
+                    rejected_reason = reason
+                else:
+                    executable, reason = validate_target_for_current_inference(
+                        str(pair['target']), str(pair['visible_problem'])
+                    )
+                    if not executable:
+                        rejected_reason = reason
+                if rejected_reason:
+                    stats['actions_rejected'] += 1
+                    record(pair, 'rejected', rejected_reason)
+                    if args.split_actions:
+                        remaining = max(
+                            0,
+                            int(pair.get('action_count', len(converted)))
+                            - int(pair.get('action_index', 0)) - 1,
+                        )
+                        stats['unreachable_actions'] += remaining
+                    break
+                row_pairs.append(pair)
+            if rejected_reason:
+                stats[rejected_reason] = stats.get(rejected_reason, 0) + 1
+                if row_pairs:
+                    stats['rows_partial'] += 1
+                    stats['actions_discarded_with_row'] += len(row_pairs)
+                    for pair in row_pairs:
+                        record(pair, 'rejected', 'incomplete_action_sequence')
+                # A strict auxiliary example is useful only if inference can
+                # reproduce its entire action chain.  Do not train on an easy
+                # prefix whose required suffix is unreachable.
+                row_pairs = []
+                stats['rows_rejected'] += 1
+            else:
+                stats['rows_complete'] += 1
+            for pair in row_pairs:
+                dst.write(json.dumps(pair, sort_keys=True) + '\n')
+                stats['written'] += 1
+                record(pair, 'written')
+
+    report = {
+        **stats,
+        'input': str(args.input),
+        'out': str(args.out),
+        'split_actions': args.split_actions,
+        'by_source_construction': {
+            family: {
+                **values,
+                'rejection_reasons': dict(values['rejection_reasons']),
+            }
+            for family, values in sorted(family_stats.items())
+        },
+    }
+    if args.stats_out is not None:
+        args.stats_out.parent.mkdir(parents=True, exist_ok=True)
+        args.stats_out.write_text(
+            json.dumps(report, indent=2, sort_keys=True) + '\n',
+            encoding='utf-8',
+        )
 
     print(
-        'converted {written}/{read} rows to {out} '
-        '(multi_target={multi_target}, too_many_predicates={too_many_predicates}, '
+        'converted {written} actions from {read} rows to {out} '
+        '(complete={rows_complete}, partial={rows_partial}, '
+        'rejected={rows_rejected}, action_rejections={actions_rejected}, '
         'errors={errors})'.format(out=args.out, **stats)
     )
     return 0 if stats['written'] else 1

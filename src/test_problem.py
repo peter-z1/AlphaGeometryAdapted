@@ -56,6 +56,18 @@ class ProblemTest(unittest.TestCase):
             '{S} a : ; b : ; c : ; d : T a b c d 00 T a c b d 01 ? T a d b c',
         )
 
+    def test_triangle12_ratio_literal_serializes(self):
+        p = pr.Problem.from_txt(
+            'a b c = triangle12 a b c ? cong a b a c', translate=False
+        )
+
+        setup_str = p.setup_str_from_problem(ProblemTest.defs)
+
+        self.assertEqual(
+            setup_str,
+            '{S} a : ; b : ; c : / a b a c 1/2 00 ? D a b a c',
+        )
+
 
 if __name__ == '__main__':
     test_alphageometry.run_test(ProblemTest)

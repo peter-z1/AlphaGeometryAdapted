@@ -21,6 +21,8 @@ checkpoint, tokenizer, and dataset lineage.
   genuinely needed by DD+AR.
 - Deterministic conversion, deduplication, splitting, and tokenizer training.
 - A 152M-parameter PyTorch causal transformer and inference adapter.
+- A portable Qwen3.5-9B QLoRA extension with pinned configurations and a
+  shared evaluator for both model backends.
 - Formalized IMO-AG-30 benchmarks, saved proofs, and evaluation summaries.
 - The complete 15,751-example v4 auxiliary fine-tuning split and a 2,000-row
   pretraining sample in Git-friendly form.
@@ -47,6 +49,8 @@ python scripts/verify_release.py \
 | `src/train_geometry_tokenizer.py` | Trains the symbolic SentencePiece word tokenizer |
 | `src/train_demo_lm.py` | Trains the PyTorch causal transformer on CPU or GPU |
 | `src/pytorch_lm_inference.py` | Uses a trained PyTorch checkpoint during proof search |
+| `src/huggingface_lm_inference.py` | Uses a Hugging Face/PEFT adapter during proof search |
+| `experiments/qwen3_5_9b/` | Qwen3.5 data preparation, QLoRA training, evaluation, and tests |
 | `data/defs.txt`, `data/rules.txt` | AlphaGeometry construction language and deduction rules |
 | `data/generated/` | Small, committed teaching data and the complete v4 auxiliary split |
 | `benchmarks/` | Formalizations, portable runners, diagrams, proofs, and results |
@@ -117,6 +121,12 @@ The legacy AlphaGeometryRE/ChatLLM path remains available with
 third-party model are optional and are not part of this repository. Install its
 build helpers with `pip install -r requirements-chatllm.txt`, then run
 `scripts/install_chatllm_native.sh` if that comparison backend is needed.
+
+The optional Qwen3.5-9B extension is documented in
+[experiments/qwen3_5_9b/README.md](experiments/qwen3_5_9b/README.md). Its pinned
+QLoRA configurations and scheduler recipes are committed, while Hugging Face
+caches, generated data, adapters, and checkpoints remain under ignored output
+directories.
 
 ## Small end-to-end teaching run
 

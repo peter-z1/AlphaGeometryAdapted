@@ -45,10 +45,7 @@ class PytorchLanguageModelInference:
         return self.sp.decode([i for i in generated if i not in {self.bos_id, self.eos_id, self.pad_id}])
 
     @torch.no_grad()
-    def beam_decode(self, inputs: str, eos_tokens: list[str]):
-        if eos_tokens != [";"]:
-            raise ValueError("only ';' is supported as an EOS token")
-
+    def _decode(self, inputs: str, stop_at_semicolon: bool):
         prefix = self._encode_prompt(inputs)
         beams: list[tuple[float, list[int], bool]] = [(0.0, [], False)]
 
@@ -70,7 +67,9 @@ class PytorchLanguageModelInference:
                 for value, index in zip(values.tolist(), indices.tolist()):
                     new_generated = generated + [int(index)]
                     text = self._continuation_text(new_generated).strip()
-                    finished = index == self.eos_id or text.endswith(";")
+                    finished = index == self.eos_id or (
+                        stop_at_semicolon and text.endswith(";")
+                    )
                     candidates.append((score + float(value), new_generated, finished))
 
             candidates.sort(key=lambda item: item[0], reverse=True)
@@ -82,9 +81,18 @@ class PytorchLanguageModelInference:
         scores = []
         for score, generated, _done in beams:
             text = self._continuation_text(generated).strip()
-            if ";" in text:
+            if stop_at_semicolon and ";" in text:
                 text = text[: text.index(";") + 1]
             seqs.append(text)
             scores.append(score)
 
         return {"seqs_str": seqs, "scores": scores}
+
+    def beam_decode(self, inputs: str, eos_tokens: list[str]):
+        if eos_tokens != [";"]:
+            raise ValueError("only ';' is supported as an EOS token")
+        return self._decode(inputs, stop_at_semicolon=True)
+
+    def completion_decode(self, inputs: str):
+        """Decode a complete supervised target up to model EOS or token limit."""
+        return self._decode(inputs, stop_at_semicolon=False)

@@ -330,6 +330,35 @@ def translate_constrained_to_constructive(
         return 'on_line', [a, b, c]
 
     elif name in ['^', 'eqangle']:
+        # The constrained LM language describes an angle as two lines, hence
+        # ``eqangle`` has eight arguments: AB, CD, EF, GH.  The original
+        # inverse adapter below predates that representation and operates on
+        # the equivalent six-point form (angle ABC = angle DEF).  Collapse
+        # each incident pair of lines before applying the established cases.
+        if len(args) == 8:
+            a, b, c, d, e, f, g, h = args
+
+            def incident_angle(
+                line1: tuple[str, str], line2: tuple[str, str]
+            ) -> list[str]:
+                common = set(line1).intersection(line2)
+                if len(common) != 1:
+                    raise ValueError(
+                        'eqangle line pairs must have exactly one common point'
+                    )
+                vertex = next(iter(common))
+                first = line1[1] if line1[0] == vertex else line1[0]
+                second = line2[1] if line2[0] == vertex else line2[0]
+                return [first, vertex, second]
+
+            args = incident_angle((a, b), (c, d)) + incident_angle(
+                (e, f), (g, h)
+            )
+        if len(args) != 6:
+            raise ValueError(
+                f'eqangle expects 8 line-endpoint arguments, got {len(args)}'
+            )
+
         a, b, c, d, e, f = args
 
         if point in [d, e, f]:
@@ -419,6 +448,10 @@ def try_translate_constrained_to_construct(string: str, g: gh.Graph) -> str:
     Returns:
       str: whether this construction is valid. If not, starts with "ERROR:".
     """
+    string = string.strip()
+    if not string:
+        return 'ERROR: empty construction'
+
     if string[-1] != ';':
         return 'ERROR: must end with ;'
 
@@ -451,6 +484,7 @@ def try_translate_constrained_to_construct(string: str, g: gh.Graph) -> str:
 
     clause_txt = point + ' = '
     constructions = []
+    repeated_output_aline = False
 
     for prem in prems:
         name, *args = prem
@@ -473,9 +507,19 @@ def try_translate_constrained_to_construct(string: str, g: gh.Graph) -> str:
 
         if name == 'on_aline':
             if args.count(point) > 1:
-                return f'ERROR: on_aline involves twice {point}'
+                # ``on_bline`` emits a congruence plus a redundant angle
+                # equality.  The congruence already translates to the exact
+                # perpendicular-bisector locus, while the generic angle
+                # inverse cannot express its repeated output safely.
+                repeated_output_aline = True
+                continue
 
         constructions += [name + ' ' + ' '.join(args)]
+
+    if repeated_output_aline and not any(
+        construction.startswith('on_bline ') for construction in constructions
+    ):
+        return f'ERROR: on_aline involves twice {point}'
 
     clause_txt += ', '.join(constructions)
     clause = pr.Clause.from_txt(clause_txt)
@@ -486,6 +530,44 @@ def try_translate_constrained_to_construct(string: str, g: gh.Graph) -> str:
         return 'ERROR: ' + traceback.format_exc()
 
     return clause_txt
+
+
+def try_translate_constrained_sequence_to_construct(
+    string: str, g: gh.Graph
+) -> str:
+    """Validate a semicolon-delimited sequence of auxiliary point clauses.
+
+    Training targets can contain several dependent point clauses.  Each clause
+    must therefore be checked against a graph containing the earlier clauses,
+    rather than passing the whole completion to the one-clause translator.
+    """
+    string = string.strip()
+    if not string:
+        return 'ERROR: empty construction'
+    if not string.endswith(';'):
+        return 'ERROR: must end with ;'
+
+    segments = [segment.strip() for segment in string.split(';') if segment.strip()]
+    if not segments:
+        return 'ERROR: empty construction'
+
+    graph = g.copy()
+    translations = []
+    for index, segment in enumerate(segments):
+        translation = try_translate_constrained_to_construct(segment + ' ;', graph)
+        if translation.startswith('ERROR:'):
+            return f'ERROR: clause {index + 1}: {translation[7:].strip()}'
+        try:
+            clause = pr.Clause.from_txt(translation)
+            graph.add_clause(clause, index, DEFINITIONS)
+            # Graph.copy() rebuilds from build_def, so retain each accepted
+            # incremental clause there before validating the next dependency.
+            graph.build_def[0].clauses.append(clause)
+        except Exception:  # pylint: disable=broad-except
+            return f'ERROR: clause {index + 1}: ' + traceback.format_exc()
+        translations.append(translation)
+
+    return '; '.join(translations)
 
 
 def insert_aux_to_premise(pstring: str, auxstring: str) -> str:
@@ -537,6 +619,7 @@ def run_alphageometry(
     search_depth: int,
     beam_size: int,
     out_file: str,
+    search_stats: dict[str, int] | None = None,
 ) -> bool:
     """Simplified code to run AlphaGeometry proof search.
 
@@ -555,10 +638,17 @@ def run_alphageometry(
       search_depth: max proof search depth.
       beam_size: beam size of the proof search.
       out_file: path to output file if solution is found.
+      search_stats: optional mutable counter map for candidate diagnostics.
 
     Returns:
       boolean of whether this is solved.
     """
+    if search_stats is None:
+        search_stats = {}
+
+    def increment(name: str, amount: int = 1) -> None:
+        search_stats[name] = search_stats.get(name, 0) + amount
+
     # translate the problem to a string of grammar that the LM is trained on.
     string = p.setup_str_from_problem(DEFINITIONS)
     # special tokens prompting the LM to generate auxiliary points.
@@ -594,6 +684,8 @@ def run_alphageometry(
         for prev_score, (g, string, pstring) in beam_queue:
             logging.info('Decoding from %s', string)
             outputs = model.beam_decode(string, eos_tokens=[';'])
+            increment('decode_calls')
+            increment('decoded_candidates', len(outputs['seqs_str']))
 
             # translate lm output to the constructive language.
             # so that we can update the graph representing proof states:
@@ -615,25 +707,51 @@ def run_alphageometry(
 
                 if translation.startswith('ERROR:'):
                     # the construction is invalid.
+                    increment('translation_rejections')
                     continue
 
                 # Update the constructive statement of the problem with the aux point:
                 candidate_pstring = insert_aux_to_premise(pstring, translation)
 
                 logging.info('Solving: "%s"', candidate_pstring)
-                p_new = pr.Problem.from_txt(candidate_pstring)
+                try:
+                    p_new = pr.Problem.from_txt(candidate_pstring)
+                except Exception as exc:  # Candidate failure is not a search failure.
+                    increment('candidate_parse_rejections')
+                    logging.warning(
+                        'Skipping unparsable auxiliary candidate: %s: %s',
+                        type(exc).__name__, exc,
+                    )
+                    continue
 
                 # This is the new proof state graph representation:
                 try:
                     g_new, _ = build_problem_with_retries(
                         p_new, DEFINITIONS, max_attempts=20)
-                except RuntimeError:
+                except TimeoutError:
+                    raise
+                except (Exception, SystemExit) as exc:
+                    increment('candidate_build_rejections')
                     logging.warning(
-                        'Skipping auxiliary candidate after repeated invalid '
-                        'numerical realizations: "%s"', candidate_pstring
+                        'Skipping auxiliary candidate that cannot be built: '
+                        '%s: %s', type(exc).__name__, exc,
                     )
                     continue
-                if run_ddar(g_new, p_new, out_file):
+
+                try:
+                    solved = run_ddar(g_new, p_new, out_file)
+                except TimeoutError:
+                    raise
+                except Exception as exc:  # Candidate failure is not a search failure.
+                    increment('candidate_reasoning_rejections')
+                    logging.warning(
+                        'Skipping auxiliary candidate rejected by DD+AR: %s: %s',
+                        type(exc).__name__, exc,
+                    )
+                    continue
+
+                increment('accepted_candidates')
+                if solved:
                     logging.info('Solved.')
                     return True
 

@@ -96,6 +96,50 @@ ROOT_CONSTRUCTIONS = {
     'triangle12',
 }
 
+# Root sampling is intentionally independent from ``construction_set``.  The
+# latter controls which constructions may extend a diagram; it should not also
+# silently change the distribution of initial configurations.  The diversified
+# weights sum to 100, making the intended mixture easy to audit.  ``free`` is
+# omitted (equivalently, weight zero) because a one-point root rarely supports
+# a successful extension.
+DIVERSIFIED_ROOT_WEIGHTS = {
+    'triangle': 20,
+    'quadrangle': 15,
+    'pentagon': 10,
+    'segment': 5,
+    'iso_triangle': 5,
+    'r_triangle': 5,
+    'risos': 5,
+    'ieq_triangle': 5,
+    'triangle12': 5,
+    'eq_quadrangle': 4,
+    'eq_trapezoid': 4,
+    'eqdia_quadrangle': 4,
+    'rectangle': 4,
+    'r_trapezoid': 3,
+    'isquare': 3,
+    'trapezoid': 3,
+}
+ROOT_POLICIES = ('triangle', 'diversified')
+FOCUS_PLACEMENTS = ('eager', 'last')
+FOCUS_DEPENDENCY_MODES = ('mixed', 'independent')
+FOCUS_BRIDGE_MODES = ('none', 'empirical_v6')
+
+# Proposal priors measured from the v6 strict archive. They only choose a
+# visible follow-up construction; exact DD+AR and strict filtering still
+# decide whether an example is valid.
+EMPIRICAL_V6_FOCUS_BRIDGES = {
+    'foot': 'orthocenter',
+    'intersection_cc': 'orthocenter',
+    'intersection_lc': 'orthocenter',
+    'reflect': 'orthocenter',
+    'shift': 'orthocenter',
+    'intersection_lt': 'orthocenter',
+    'midpoint': 'trisegment',
+    'intersection_ll': 'trisegment',
+    'parallelogram': 'parallelogram',
+}
+
 
 def construction_names_for_set(
     definitions: dict[str, pr.Definition], construction_set: str
@@ -111,12 +155,40 @@ def construction_names_for_set(
     raise ValueError(f'unknown construction set: {construction_set}')
 
 
-def root_construction_names_for_set(
-    definitions: dict[str, pr.Definition], construction_set: str
-) -> list[str]:
-    if construction_set == 'all':
-        return sorted(name for name in ROOT_CONSTRUCTIONS if name in definitions)
-    return ['triangle']
+def root_construction_weights_for_policy(
+    definitions: dict[str, pr.Definition], root_policy: str
+) -> dict[str, int]:
+    """Return available roots and integer weights for a named root policy."""
+    if root_policy == 'triangle':
+        weights = {'triangle': 1}
+    elif root_policy == 'diversified':
+        weights = DIVERSIFIED_ROOT_WEIGHTS
+    else:
+        raise ValueError(f'unknown root policy: {root_policy}')
+
+    available = {
+        name: weight
+        for name, weight in weights.items()
+        if weight > 0 and name in definitions
+    }
+    if not available:
+        raise ValueError(f'root policy {root_policy!r} has no available definitions')
+    return available
+
+
+def choose_root_construction(
+    definitions: dict[str, pr.Definition],
+    root_policy: str,
+    rng: random.Random,
+) -> str:
+    """Choose a root deterministically from ``rng`` using integer weights."""
+    weights = root_construction_weights_for_policy(definitions, root_policy)
+    draw = rng.randrange(sum(weights.values()))
+    for name, weight in weights.items():
+        if draw < weight:
+            return name
+        draw -= weight
+    raise AssertionError('unreachable weighted-root draw')
 
 # A tiny set of known-good full diagrams.  These are useful as "smoke seeds":
 # they verify that the mining stage can discover an auxiliary construction even
@@ -129,28 +201,26 @@ CURATED_FULL_PROBLEMS = [
     ),
 ]
 
-GOAL_PREDICATES = {'coll', 'cong', 'cyclic', 'midp', 'para', 'perp'}
+GOAL_PREDICATES = {
+    'coll',
+    'cong',
+    'cyclic',
+    'eqangle',
+    'eqratio',
+    'midp',
+    'para',
+    'perp',
+}
 
-# `enumerate_candidate_goals` only special-cases GOAL_PREDICATES with dedicated
-# graph scans (line/circle/length-class enumeration); predicates outside that
-# set are still picked up opportunistically from `added` (facts DD+AR actually
-# derived), just without the extra combinatorial expansion. `data/rules.txt`
-# also concludes eqangle(6)/eqratio(3/6)/simtri(2)/contri(2) rules, all of
-# which DD+AR already derives as intermediate proof steps -- widening the goal
-# set to include them gives full theorem/proof pretraining data (see
-# generate_pretraining_data.py) many more distinct (construction, goal)
-# skeletons instead of collapsing everything onto these 6 predicates. This
-# stays separate from GOAL_PREDICATES because the aux-construction fine-tuning
-# path (this module) hides the goal's defining point and needs
-# `translate_constrained_to_constructive` (src/alphageometry.py) to invert the
-# chosen goal back into a construction; that function does not yet know how to
-# invert eqratio/simtri/contri.
+# Auxiliary mining uses the base predicates above.  The broader theorem/proof
+# pretraining set also retains DD+AR's six-point and triangle-relation forms.
+# An eqratio *goal* is supported even though the current inverse adapter cannot
+# use an eqratio predicate itself to define a newly generated point;
+# executable-action filtering rejects that narrower unsupported case.
 PRETRAIN_GOAL_PREDICATES = GOAL_PREDICATES | {
     'contri',
     'contri2',
-    'eqangle',
     'eqangle6',
-    'eqratio',
     'eqratio3',
     'eqratio6',
     'simtri',
@@ -178,6 +248,10 @@ class AttemptTimeout(BaseException):
     Inherits BaseException so the broad `except Exception` guards inside the
     mining loop cannot swallow it.
     """
+
+
+class FocusConstructionFailed(Exception):
+    """Raised when a targeted diagram cannot realize its requested constructor."""
 
 
 def _alarm_handler(signum, frame):  # pylint: disable=unused-argument
@@ -246,6 +320,8 @@ def construction_clause(
     existing: list[str],
     next_name_index: int,
     rng: random.Random,
+    preferred_inputs: list[str] | None = None,
+    preferred_input_rate: float = 0.0,
 ) -> tuple[pr.Clause, list[str], int] | None:
     """Sample one clause for a definition, using the full argument form."""
     output_vars = list(cdef.points)
@@ -261,12 +337,37 @@ def construction_clause(
     # Use distinct existing points for the formal input variables.  This avoids
     # many immediate diff/ncoll failures while still letting the graph reject
     # geometrically impossible choices.
-    inputs = rng.sample(existing, len(input_vars))
+    preferred = [value for value in (preferred_inputs or []) if value in existing]
+    if preferred and input_vars and rng.random() < preferred_input_rate:
+        first = rng.choice(preferred)
+        inputs = [first] + rng.sample(
+            [value for value in existing if value != first], len(input_vars) - 1
+        )
+        rng.shuffle(inputs)
+    else:
+        inputs = rng.sample(existing, len(input_vars))
     mapping = dict(zip(output_vars, outputs))
     mapping.update(zip(input_vars, inputs))
     args = [mapping[v] for v in cdef.construction.args]
     clause = pr.Clause(outputs, [pr.Construction(name, args)])
     return clause, outputs, next_name_index + len(outputs)
+
+
+def problem_construction_names(problem: pr.Problem) -> list[str]:
+    """Return construction names in clause order, including compound clauses."""
+    return [
+        construction.name
+        for clause in problem.clauses
+        for construction in clause.constructions
+    ]
+
+
+def problem_root_construction(problem: pr.Problem) -> str:
+    """Return the first construction, which defines the diagram's root."""
+    names = problem_construction_names(problem)
+    if not names:
+        raise ValueError('problem has no root construction')
+    return names[0]
 
 
 def dependencies_hold(
@@ -318,11 +419,22 @@ def sample_random_problem(
     max_steps: int,
     per_step_attempts: int,
     construction_set: str = 'conservative',
+    focus_construction: str | None = None,
+    focus_attempts: int = 100,
+    focus_dependency_rate: float = 0.75,
+    diagnostics: dict[str, int] | None = None,
+    root_policy: str = 'triangle',
+    focus_placement: str = 'eager',
+    focus_dependency_mode: str = 'mixed',
+    focus_bridge_mode: str = 'none',
 ) -> pr.Problem:
-    root_names = root_construction_names_for_set(definitions, construction_set)
-    root_name = rng.choice(root_names)
+    root_name = choose_root_construction(definitions, root_policy, rng)
+    _bump(diagnostics, f'root_policy_{root_policy}')
+    _bump(diagnostics, f'root_selected_{root_name}')
     root_clause = root_construction_clause(root_name, definitions[root_name])
     if root_clause is None:
+        _bump(diagnostics, f'root_rejected_signature_{root_name}')
+        _bump(diagnostics, 'root_fallback_triangle')
         clauses = [base_triangle()]
         existing = ['a', 'b', 'c']
         next_name_index = 3
@@ -339,30 +451,222 @@ def sample_random_problem(
     target_steps = rng.randint(min_steps, max_steps)
     construction_names = construction_names_for_set(definitions, construction_set)
 
-    for _ in range(target_steps):
-        for _attempt in range(per_step_attempts):
-            name = rng.choice(construction_names)
-            if name not in definitions:
-                continue
+    if focus_construction is not None:
+        if focus_construction not in construction_names:
+            raise ValueError(
+                f'focus construction {focus_construction!r} is not an eligible '
+                f'{construction_set!r} extension'
+            )
+        if focus_attempts < 1:
+            raise ValueError('focus_attempts must be positive')
+        if not 0 <= focus_dependency_rate <= 1:
+            raise ValueError('focus_dependency_rate must be in [0, 1]')
+        if focus_placement not in FOCUS_PLACEMENTS:
+            raise ValueError(f'unknown focus placement: {focus_placement}')
+        if focus_dependency_mode not in FOCUS_DEPENDENCY_MODES:
+            raise ValueError(
+                f'unknown focus dependency mode: {focus_dependency_mode}'
+            )
+        if focus_bridge_mode not in FOCUS_BRIDGE_MODES:
+            raise ValueError(f'unknown focus bridge mode: {focus_bridge_mode}')
+        _bump(diagnostics, f'focus_dependency_mode_{focus_dependency_mode}')
+        _bump(diagnostics, f'focus_bridge_mode_{focus_bridge_mode}')
+        if diagnostics is not None:
+            diagnostics.setdefault('focus_dependent_commits', 0)
+            diagnostics.setdefault('focus_dependency_violations', 0)
+            diagnostics.setdefault(
+                f'focus_dependent_commit_{focus_construction}', 0
+            )
+            diagnostics.setdefault(
+                f'focus_dependency_violation_{focus_construction}', 0
+            )
 
+    focus_added = focus_construction is None
+    focus_descendants: set[str] = set()
+    independent_points: list[str] | None = None
+    focus_input_points: list[str] = []
+    bridge_pending: str | None = None
+
+    def try_name(
+        name: str,
+        attempts: int,
+        input_override: list[str] | None = None,
+    ) -> bool:
+        nonlocal existing, next_name_index, plevel, focus_added
+        nonlocal independent_points, focus_input_points, bridge_pending
+        for _ in range(attempts):
+            _bump(diagnostics, f'construction_proposed_{name}')
+            commits_focus = not focus_added and name == focus_construction
+            independent_post_focus = (
+                focus_dependency_mode == 'independent'
+                and focus_added
+                and independent_points is not None
+            )
+            if input_override is not None:
+                input_points = input_override
+            elif independent_post_focus:
+                assert independent_points is not None
+                input_points = independent_points
+            else:
+                input_points = existing
+            preferred_inputs = (
+                []
+                if independent_post_focus or input_override is not None
+                else sorted(focus_descendants)
+            )
             sampled = construction_clause(
-                name, definitions[name], existing, next_name_index, rng
+                name,
+                definitions[name],
+                input_points,
+                next_name_index,
+                rng,
+                preferred_inputs,
+                focus_dependency_rate if preferred_inputs else 0.0,
             )
             if sampled is None:
+                _bump(diagnostics, f'construction_rejected_signature_{name}')
                 continue
-
             clause, new_points, candidate_next_index = sampled
+            uses_focus_descendant = any(
+                argument in focus_descendants
+                for construction in clause.constructions
+                for argument in construction.args
+            )
+            if independent_post_focus and uses_focus_descendant:
+                # This should be unreachable because ``input_points`` excludes
+                # the focus dependency closure.  Keep the guard and counters so
+                # long corpus runs can audit that guarantee directly.
+                _bump(diagnostics, 'focus_dependency_violations')
+                _bump(
+                    diagnostics,
+                    f'focus_dependency_violation_{focus_construction}',
+                )
+                _bump(diagnostics, f'construction_rejected_focus_dependency_{name}')
+                continue
             ok, _added, candidate_plevel = add_clause_safely(
                 g, clause, plevel, definitions
             )
             if not ok:
+                _bump(diagnostics, f'construction_rejected_build_{name}')
                 continue
-
             clauses.append(clause)
+            if commits_focus:
+                # Snapshot the points that existed before the focus.  In
+                # independent mode this becomes the only input pool available
+                # to later ordinary clauses; outputs from those clauses are
+                # appended after each successful independent commit.
+                independent_points = list(existing)
+                focus_input_points = []
+                for construction in clause.constructions:
+                    for argument in construction.args:
+                        if (
+                            argument not in new_points
+                            and argument not in focus_input_points
+                        ):
+                            focus_input_points.append(argument)
+                if focus_bridge_mode == 'empirical_v6':
+                    bridge_pending = EMPIRICAL_V6_FOCUS_BRIDGES.get(
+                        focus_construction  # type: ignore[arg-type]
+                    )
+                    if bridge_pending is not None:
+                        _bump(
+                            diagnostics,
+                            f'focus_bridge_requested_{focus_construction}_to_'
+                            f'{bridge_pending}',
+                        )
             existing.extend(new_points)
             next_name_index = candidate_next_index
             plevel = candidate_plevel
-            break
+            if commits_focus:
+                focus_added = True
+                focus_descendants.update(new_points)
+            elif (
+                focus_dependency_mode == 'mixed'
+                and name == focus_construction
+            ):
+                # Preserve the historical mixed-mode treatment of repeated
+                # constructions from the requested family.
+                focus_descendants.update(new_points)
+            elif uses_focus_descendant:
+                focus_descendants.update(new_points)
+                _bump(diagnostics, f'focus_dependent_commit_{focus_construction}')
+                _bump(diagnostics, 'focus_dependent_commits')
+            elif independent_post_focus:
+                independent_points.extend(new_points)
+                _bump(diagnostics, 'focus_independent_postfocus_commits')
+            _bump(diagnostics, f'construction_committed_{name}')
+            return True
+        return False
+
+    # Counterfactual generation benefits from a rich visible scaffold.  In
+    # ``last`` mode we reserve the final slot for the requested construction,
+    # exclude it from the prefix, and therefore create no descendants that
+    # would have to be hidden again.  ``eager`` preserves the historical soft-
+    # focus policy used by traceback mining.
+    if focus_construction is not None and focus_placement == 'last':
+        ordinary_slots = max(0, target_steps - 1)
+        ordinary_names = [
+            name for name in construction_names if name != focus_construction
+        ]
+        for _ in range(ordinary_slots):
+            for _attempt in range(per_step_attempts):
+                if try_name(rng.choice(ordinary_names), 1):
+                    break
+        _bump(diagnostics, 'focus_placement_last')
+    else:
+        focus_attempts_per_slot = max(1, focus_attempts // max(target_steps, 1))
+        for _ in range(target_steps):
+            if not focus_added and try_name(
+                focus_construction, focus_attempts_per_slot  # type: ignore[arg-type]
+            ):
+                focus_added = True
+                continue
+
+            if bridge_pending is not None:
+                bridge_name = bridge_pending
+                bridge_pending = None
+                if try_name(
+                    bridge_name,
+                    per_step_attempts,
+                    input_override=list(focus_input_points),
+                ):
+                    _bump(
+                        diagnostics,
+                        f'focus_bridge_committed_{focus_construction}_to_'
+                        f'{bridge_name}',
+                    )
+                    continue
+                _bump(
+                    diagnostics,
+                    f'focus_bridge_failed_{focus_construction}_to_{bridge_name}',
+                )
+                _bump(diagnostics, 'focus_bridge_fallback_to_ordinary')
+
+            for _attempt in range(per_step_attempts):
+                name = rng.choice(construction_names)
+                if try_name(name, 1):
+                    if name == focus_construction:
+                        focus_added = True
+                    break
+
+    if not focus_added and try_name(
+        focus_construction, focus_attempts  # type: ignore[arg-type]
+    ):
+        focus_added = True
+
+    if not focus_added:
+        _bump(diagnostics, f'focus_failed_{focus_construction}')
+        raise FocusConstructionFailed(
+            f'could not realize focus construction {focus_construction!r}'
+        )
+    if focus_construction is not None:
+        _bump(diagnostics, f'focus_committed_{focus_construction}')
+    if bridge_pending is not None:
+        _bump(
+            diagnostics,
+            f'focus_bridge_skipped_no_slot_{focus_construction}_to_'
+            f'{bridge_pending}',
+        )
 
     return make_problem(clauses)
 
@@ -375,11 +679,37 @@ def choose_full_problem(
     per_step_attempts: int,
     curated_rate: float,
     construction_set: str = 'conservative',
+    focus_construction: str | None = None,
+    focus_attempts: int = 100,
+    focus_dependency_rate: float = 0.75,
+    diagnostics: dict[str, int] | None = None,
+    root_policy: str = 'triangle',
+    focus_placement: str = 'eager',
+    focus_dependency_mode: str = 'mixed',
+    focus_bridge_mode: str = 'none',
 ) -> pr.Problem:
+    if focus_construction is not None:
+        # Curated diagrams cannot guarantee the requested family.
+        curated_rate = 0
     if rng.random() < curated_rate:
+        _bump(diagnostics, 'root_selected_triangle')
+        _bump(diagnostics, 'root_source_curated')
         return pr.Problem.from_txt(rng.choice(CURATED_FULL_PROBLEMS), translate=False)
     return sample_random_problem(
-        definitions, rng, min_steps, max_steps, per_step_attempts, construction_set
+        definitions,
+        rng,
+        min_steps,
+        max_steps,
+        per_step_attempts,
+        construction_set,
+        focus_construction,
+        focus_attempts,
+        focus_dependency_rate,
+        diagnostics,
+        root_policy,
+        focus_placement,
+        focus_dependency_mode,
+        focus_bridge_mode,
     )
 
 
@@ -616,6 +946,24 @@ def enumerate_candidate_goals(
             if emitted >= per_family_cap:
                 break
 
+    # Equal-angle and equal-ratio facts are abundant in the algebraic closure,
+    # but they are not guaranteed to appear in DD+AR's returned dependency
+    # list.  Enumerate them explicitly so auxiliary mining does not obtain
+    # coverage merely by chance.  Both graph iterators are lazy; islice keeps
+    # their potentially large equivalence classes bounded like the families
+    # above.
+    if 'eqangle' in goal_predicates:
+        for args in itertools.islice(
+            g.all_eqangles_8points(), per_family_cap
+        ):
+            maybe_add('eqangle', args)
+
+    if 'eqratio' in goal_predicates:
+        for args in itertools.islice(
+            g.all_eqratios_8points(), per_family_cap
+        ):
+            maybe_add('eqratio', args)
+
     rng.shuffle(candidates)
     if diagnostics is not None:
         diagnostics['candidates_enumerated_total'] = (
@@ -845,6 +1193,7 @@ def make_example(
         'verified_with_aux': verified_with_aux,
         'id': example_id,
         'seed': seed,
+        'root_construction': problem_root_construction(full_problem),
         'visible_problem': problem_txt(visible_clauses, goal),
         'target_auxiliary': '; '.join(c.txt() for c in aux_clauses),
         'removed_dependent_clauses': [c.txt() for c in dropped_clauses],
@@ -876,6 +1225,7 @@ def generate_examples(
     diagnostics: dict[str, int] | None = None,
     verify_with_aux_rate: float = 0.0,
     attempt_time_budget: int = 0,
+    root_policy: str = 'triangle',
 ) -> list[dict[str, object]]:
     return list(
         iter_examples(
@@ -896,6 +1246,7 @@ def generate_examples(
             diagnostics=diagnostics,
             verify_with_aux_rate=verify_with_aux_rate,
             attempt_time_budget=attempt_time_budget,
+            root_policy=root_policy,
         )
     )
 
@@ -924,6 +1275,7 @@ def _mine_attempt(
     rank_by_orphan: bool,
     diagnostics: dict[str, int] | None,
     verify_with_aux_rate: float,
+    root_policy: str,
 ) -> None:
     """Sample one diagram, saturate it, and mine accepted examples into `out`."""
     _bump(diagnostics, 'diagrams_sampled')
@@ -936,6 +1288,8 @@ def _mine_attempt(
             per_step_attempts,
             curated_rate,
             construction_set,
+            root_policy=root_policy,
+            diagnostics=diagnostics,
         )
         closure = run_ddar(full_problem, definitions, rules, max_level, timeout)
     except (Exception, SystemExit):  # pylint: disable=broad-exception-caught
@@ -1012,6 +1366,7 @@ def iter_examples(
     diagnostics: dict[str, int] | None = None,
     verify_with_aux_rate: float = 0.0,
     attempt_time_budget: int = 0,
+    root_policy: str = 'triangle',
 ) -> Iterable[dict[str, object]]:
     definitions, rules = load_defs_rules()
     rng = random.Random(seed)
@@ -1059,6 +1414,7 @@ def iter_examples(
                 rank_by_orphan,
                 diagnostics,
                 verify_with_aux_rate,
+                root_policy,
             )
         except AttemptTimeout:
             # Heavy-tail diagram: keep whatever was mined before the alarm.
@@ -1103,6 +1459,14 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         '--construction_set',
         choices=['conservative', 'expanded', 'all'],
         default='conservative',
+    )
+    parser.add_argument(
+        '--root_policy',
+        choices=ROOT_POLICIES,
+        default='triangle',
+        help='Initial-configuration sampler, independent of --construction_set. '
+             'Use diversified for the audited weighted mixture of triangles, '
+             'quadrilaterals, pentagons, and segments.',
     )
     parser.add_argument('--out', type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument(
@@ -1177,6 +1541,7 @@ def main(argv: list[str]) -> int:
             diagnostics=diagnostics,
             verify_with_aux_rate=args.verify_with_aux_rate,
             attempt_time_budget=args.attempt_time_budget,
+            root_policy=args.root_policy,
         ):
             f.write(json.dumps(example, sort_keys=True) + '\n')
             num_written += 1

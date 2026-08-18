@@ -17,7 +17,11 @@ mkdir -p "$MPLCONFIGDIR"
 "$python_bin" src/test_synthetic_data_to_lm.py
 "$python_bin" src/test_filter_strict_auxiliary.py
 "$python_bin" src/test_generate_geometry_corpus.py
+"$python_bin" src/test_select_diverse_auxiliary.py
+"$python_bin" src/test_root_sampling.py
 "$python_bin" src/test_alphageometry.py
+"$python_bin" src/test_huggingface_lm_inference.py
+"$python_bin" src/test_pytorch_lm_inference.py
 if [[ -n "${CHATLLM_MODEL:-}" ]]; then
     "$python_bin" src/test_lm_inference.py --model "$CHATLLM_MODEL"
 else

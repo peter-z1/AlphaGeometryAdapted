@@ -105,10 +105,7 @@ class HuggingFaceLanguageModelInference:
         return text
 
     @torch.no_grad()
-    def beam_decode(self, inputs: str, eos_tokens: list[str]):
-        if eos_tokens != [";"]:
-            raise ValueError("only ';' is supported as an EOS string")
-
+    def _generate(self, inputs: str, stop_at_semicolon: bool):
         # Training encodes the prompt with this separator before the target.
         prompt = inputs.rstrip() + " "
         encoded = self.tokenizer(prompt, return_tensors="pt", add_special_tokens=True)
@@ -122,9 +119,10 @@ class HuggingFaceLanguageModelInference:
             "return_dict_in_generate": True,
             "output_scores": True,
             "pad_token_id": self.tokenizer.pad_token_id,
-            "stop_strings": [";"],
-            "tokenizer": self.tokenizer,
         }
+        if stop_at_semicolon:
+            generation_kwargs["stop_strings"] = [";"]
+            generation_kwargs["tokenizer"] = self.tokenizer
         if self.batch_size > 1:
             generation_kwargs["early_stopping"] = True
 
@@ -140,15 +138,24 @@ class HuggingFaceLanguageModelInference:
             generated = self.model.generate(**encoded, **generation_kwargs)
 
         sequences = generated.sequences[:, input_length:]
-        texts = [
-            self._truncate_at_semicolon(
-                self.tokenizer.decode(sequence, skip_special_tokens=True)
-            )
-            for sequence in sequences
-        ]
+        texts = []
+        for sequence in sequences:
+            text = self.tokenizer.decode(sequence, skip_special_tokens=True).strip()
+            if stop_at_semicolon:
+                text = self._truncate_at_semicolon(text)
+            texts.append(text)
         sequence_scores = getattr(generated, "sequences_scores", None)
         if sequence_scores is None:
             scores = [0.0] * len(texts)
         else:
             scores = [float(score) for score in sequence_scores.detach().cpu().tolist()]
         return {"seqs_str": texts, "scores": scores}
+
+    def beam_decode(self, inputs: str, eos_tokens: list[str]):
+        if eos_tokens != [";"]:
+            raise ValueError("only ';' is supported as an EOS string")
+        return self._generate(inputs, stop_at_semicolon=True)
+
+    def completion_decode(self, inputs: str):
+        """Decode the complete supervised target up to model EOS or token limit."""
+        return self._generate(inputs, stop_at_semicolon=False)

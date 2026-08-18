@@ -16,10 +16,25 @@
 """Unit tests for alphageometry.py."""
 
 import unittest
+from unittest import mock
 
 import alphageometry
 
 class AlphaGeometryTest(unittest.TestCase):
+
+  def test_empty_auxiliary_completion_is_rejected(self):
+    self.assertEqual(
+        alphageometry.try_translate_constrained_to_construct('', None),
+        'ERROR: empty construction',
+    )
+    self.assertEqual(
+        alphageometry.try_translate_constrained_to_construct('   ', None),
+        'ERROR: empty construction',
+    )
+    self.assertEqual(
+        alphageometry.try_translate_constrained_sequence_to_construct('', None),
+        'ERROR: empty construction',
+    )
 
   def test_translate_constrained_to_constructive(self):
     self.assertEqual(
@@ -76,6 +91,39 @@ class AlphaGeometryTest(unittest.TestCase):
         ),
         ('on_circum', ['d', 'a', 'b', 'c']),
     )
+    self.assertEqual(
+        alphageometry.translate_constrained_to_constructive(
+            'x', '^', 'a b a x d e d c'.split()
+        ),
+        ('on_aline', ['x', 'a', 'b', 'c', 'd', 'e']),
+    )
+    self.assertEqual(
+        alphageometry.translate_constrained_to_constructive(
+            'x', '^', 'x a x b d e d f'.split()
+        ),
+        ('eqangle3', ['x', 'a', 'b', 'd', 'e', 'f']),
+    )
+
+  def test_eight_argument_eqangle_completion_round_trip(self):
+    graph = mock.Mock()
+    points = []
+    for name in 'abcde':
+      point = mock.Mock()
+      point.name = name
+      points.append(point)
+    graph.all_points.return_value = points
+    graph.copy.return_value = mock.Mock()
+
+    translated = alphageometry.try_translate_constrained_to_construct(
+        'x : ^ a b a x d e d c 00 ;', graph
+    )
+
+    self.assertEqual(translated, 'x = on_aline x a b c d e')
+
+    translated = alphageometry.try_translate_constrained_to_construct(
+        'x : D a x b x 00 ^ b a b x a x a b 01 ;', graph
+    )
+    self.assertEqual(translated, 'x = on_bline x b a')
 
   def test_insert_aux_to_premise(self):
     pstring = 'a b c = triangle a b c; d = on_tline d b a c, on_tline d c a b ? perp a d b c'  # pylint: disable=line-too-long
@@ -85,6 +133,53 @@ class AlphaGeometryTest(unittest.TestCase):
     self.assertEqual(
         alphageometry.insert_aux_to_premise(pstring, auxstring), target
     )
+
+  def test_invalid_candidate_reasoning_is_local_to_search(self):
+    model = mock.Mock()
+    model.beam_decode.return_value = {
+        'seqs_str': ['d : C a b d 00 ;'],
+        'scores': [0.0],
+    }
+    problem = mock.Mock()
+    problem.setup_str_from_problem.return_value = '{S} a : ; b : ;'
+    problem.txt.return_value = 'a b = segment a b ? cong a b a b'
+    initial_graph = mock.Mock()
+    candidate_graph = mock.Mock()
+    stats = {}
+
+    with mock.patch.object(
+        alphageometry,
+        'build_problem_with_retries',
+        side_effect=[(initial_graph, []), (candidate_graph, [])],
+    ), mock.patch.object(
+        alphageometry,
+        'run_ddar',
+        side_effect=[False, ValueError('degenerate candidate')],
+    ), mock.patch.object(
+        alphageometry,
+        'try_translate_constrained_to_construct',
+        return_value='d = on_line d a b',
+    ), mock.patch.object(
+        alphageometry,
+        'insert_aux_to_premise',
+        return_value='a b = segment a b; d = on_line d a b ? cong a b a b',
+    ), mock.patch.object(
+        alphageometry.pr.Problem,
+        'from_txt',
+        return_value=mock.Mock(),
+    ):
+      solved = alphageometry.run_alphageometry(
+          model=model,
+          p=problem,
+          search_depth=1,
+          beam_size=1,
+          out_file='',
+          search_stats=stats,
+      )
+
+    self.assertFalse(solved)
+    self.assertEqual(stats['candidate_reasoning_rejections'], 1)
+    self.assertEqual(stats.get('accepted_candidates', 0), 0)
 
   def test_beam_queue(self):
     beam_queue = alphageometry.BeamQueue(max_size=2)

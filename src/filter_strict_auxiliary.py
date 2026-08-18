@@ -106,6 +106,15 @@ def parse_auxiliary_clauses(text: str) -> list[pr.Clause]:
     return clauses
 
 
+def auxiliary_construction_names(clauses: list[pr.Clause]) -> list[str]:
+    """Return the minimized target's constructor names in clause order."""
+    return [
+        construction.name
+        for clause in clauses
+        for construction in clause.constructions
+    ]
+
+
 def stable_attempt_seed(row_id: object, attempt: int) -> int:
     digest = hashlib.blake2b(
         f'{row_id}:{attempt}'.encode('utf-8'), digest_size=4
@@ -350,6 +359,13 @@ def filter_row(
     strict_row['strict_minimization'] = minimization
     strict_row['strict_num_original_aux_clauses'] = len(auxiliaries)
     strict_row['strict_num_aux_clauses'] = len(selected)
+    target_names = auxiliary_construction_names(selected)
+    strict_row['target_construction_names'] = target_names
+    strict_row['target_construction_signature'] = '+'.join(sorted(target_names))
+    focus = strict_row.get('focus_construction')
+    strict_row['strict_focus_retained'] = (
+        focus in target_names if isinstance(focus, str) and focus else None
+    )
     strict_row['strict_visible_solve'] = visible_result.to_json()
     strict_row['strict_with_auxiliary_solve'] = auxiliary_result.to_json()
     strict_row['strict_problem'] = (
@@ -496,6 +512,14 @@ def main(argv: list[str] | None = None) -> int:
                         if result.row is not None:
                             out_handle.write(json.dumps(result.row, sort_keys=True) + '\n')
                             kept += 1
+                            for name in set(result.row['target_construction_names']):
+                                counts[f'kept_aux_type_{name}'] += 1
+                            signature = result.row['target_construction_signature']
+                            counts[f'kept_aux_signature_{signature}'] += 1
+                            if result.row.get('strict_focus_retained') is True:
+                                counts['kept_focus_retained'] += 1
+                            elif result.row.get('strict_focus_retained') is False:
+                                counts['kept_focus_removed_by_minimization'] += 1
                             if args.flush_every > 0 and kept % args.flush_every == 0:
                                 out_handle.flush()
                         elif rejected_handle is not None:

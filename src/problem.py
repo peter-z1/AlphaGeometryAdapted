@@ -243,8 +243,15 @@ class Problem:
                         group[p] = points
 
                     for b in bs:
-                        args = [mapping[a] for a in b.args]
                         name = b.name
+                        if b.name == 'rconst':
+                            num, den = map(int, b.args[-2:])
+                            num, den = simplify(num, den)
+                            args = [mapping[a] for a in b.args[:-2]]
+                            args.append(f'{num}/{den}')
+                        else:
+                            args = [mapping[a] for a in b.args]
+
                         if b.name in ['s_angle', 'aconst']:
                             x, y, z, v = args
                             name = 'aconst'

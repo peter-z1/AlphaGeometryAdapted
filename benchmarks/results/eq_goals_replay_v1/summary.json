@@ -1,0 +1,82 @@
+{
+  "date": "2026-08-18",
+  "description": "Shared evaluation after one replay epoch with added eqangle/eqratio goal coverage.",
+  "models": {
+    "qwen3_5_9b": {
+      "backend": "huggingface",
+      "eq_heldout": {
+        "rows": 135,
+        "top1_exact": 16,
+        "top1_exact_rate": 0.11851851851851852,
+        "topk_exact": 71,
+        "topk_exact_rate": 0.5259259259259259,
+        "top1_valid": 135,
+        "top1_valid_rate": 1.0
+      },
+      "heldout_v4": {
+        "rows": 677,
+        "top1_exact": 18,
+        "top1_exact_rate": 0.026587887740029542,
+        "topk_exact": 158,
+        "topk_exact_rate": 0.23338257016248154,
+        "top1_valid": 666,
+        "top1_valid_rate": 0.983751846381093
+      },
+      "imo_ag_30": {
+        "direct_ddar": 14,
+        "lm_auxiliary_then_ddar": 1,
+        "solved": 15,
+        "timeouts": 9
+      },
+      "jgex_33": {
+        "direct_ddar": 20,
+        "lm_auxiliary_then_ddar": 5,
+        "solved": 25,
+        "timeouts": 2
+      }
+    },
+    "self_trained_152m": {
+      "backend": "pytorch",
+      "eq_heldout": {
+        "rows": 135,
+        "top1_exact": 8,
+        "top1_exact_rate": 0.05925925925925926,
+        "topk_exact": 58,
+        "topk_exact_rate": 0.42962962962962964,
+        "top1_valid": 134,
+        "top1_valid_rate": 0.9925925925925926
+      },
+      "heldout_v4": {
+        "rows": 677,
+        "top1_exact": 30,
+        "top1_exact_rate": 0.04431314623338257,
+        "topk_exact": 143,
+        "topk_exact_rate": 0.21122599704579026,
+        "top1_valid": 667,
+        "top1_valid_rate": 0.9852289512555391
+      },
+      "imo_ag_30": {
+        "direct_ddar": 14,
+        "lm_auxiliary_then_ddar": 1,
+        "solved": 15,
+        "timeouts": 10
+      },
+      "jgex_33": {
+        "direct_ddar": 20,
+        "lm_auxiliary_then_ddar": 2,
+        "solved": 22,
+        "timeouts": 0
+      }
+    }
+  },
+  "protocol": {
+    "beam_size": 8,
+    "max_decode_len": 128,
+    "model_batch_size": 8,
+    "search_depth": 2,
+    "seed": 0,
+    "timeout_seconds": 180,
+    "topk": 8
+  },
+  "scheduler_job": "5061980"
+}
